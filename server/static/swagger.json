@@ -1,0 +1,65 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "~ 𝓟𝓻𝓸𝓽𝓸𝓽𝔂𝓹𝓮 ~",
+    "description": "Let's start with the beginning, the sentiment analyser",
+    "version": "0.0.1"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/sentiment/": {
+      "post": {
+        "summary": "Get sentiment analysis",
+        "description": "Returns the sentiment analysis of a given text",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "body",
+            "description": "Text to analyze",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "example": "This product is very good!"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sentiment analysis result.\nIf the text in input contains the word 'good', then the result is happy. It is a proof of concept, with confidence always at 95%.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sentiment": {
+                  "type": "string",
+                  "enum": ["positive", "neutral", "negative"]
+                },
+                "confidence": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "sentiment": "happy",
+                "confidence": 0.95
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
