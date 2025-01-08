@@ -7,25 +7,21 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Register the sentiment blueprint
 app.register_blueprint(sentiment_bp, url_prefix='/sentiment')
 
-# Serve swagger.json as an endpoint@app.route('/static/swagger.json')
+@app.route('/static/swagger.json')
 def swagger_json():
-    # Ensure correct path to swagger.json file
     swagger_file_path = os.path.join(app.root_path, 'static/swagger.json')
     with open(swagger_file_path, 'r') as swagger_file:
         return swagger_file.read(), 200, {'Content-Type': 'application/json'}
 
-# Swagger UI blueprint setup
 SWAGGER_URL = '/swagger'
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
-    '/static/swagger.json',  # This will be fetched from the /swagger.json route
+    '/static/swagger.json',
     config={'app_name': "Flask Sentiment API"}
 )
 
-# Register the Swagger UI blueprint
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
