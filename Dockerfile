@@ -5,6 +5,7 @@ COPY . /app
 
 ENV PYTHONPATH=/app
 
+
 RUN pip install flask
 
 #Yet we don't have dependencies, but no doubt we will need some later on

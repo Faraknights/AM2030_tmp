@@ -7,10 +7,10 @@ sentiment_bp = Blueprint('sentiment', __name__)
 def get_sentiment():
     data = request.get_json()
     text = data.get("text", "")
-    
+    print("test")
     if not text:
         return jsonify({"error": "Text is required"}), 400
-    
+ 
     sentiment = analyze_sentiment(text)
-    
-    return jsonify({"sentiment": sentiment})
+ 
+    return jsonify({"sentiment": sentiment, "confidence": 0.95})
