@@ -7,5 +7,4 @@ services:
       - .:/app
     environment:
       - FLASK_ENV=${FLASK_ENV}
-      - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}

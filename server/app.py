@@ -1,13 +1,16 @@
 from flask import Flask, jsonify
 from endpoints.sentiment import sentiment_bp
+from endpoints.run import run_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
 import os
+from config import Config
 
 app = Flask(__name__)
 CORS(app)
 
 app.register_blueprint(sentiment_bp, url_prefix='/sentiment')
+app.register_blueprint(run_bp, url_prefix='/run')
 
 @app.route('/static/swagger.json')
 def swagger_json():
@@ -25,4 +28,4 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)

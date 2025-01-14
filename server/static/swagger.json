@@ -60,6 +60,94 @@
           }
         }
       }
+    },
+    "/run/setCommand": {
+      "post": {
+        "summary": "Set the command to run",
+        "description": "Sets the command that will be executed when running the /run endpoint.",
+        "parameters": [
+          {
+            "name": "command",
+            "in": "body",
+            "description": "New command to be executed.\nUse {inputFile} as a placeholder for the input file.\nUse {outputFile} as a placeholder for the output file.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "example": "cat {inputFile} > {outputFile}"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Command updated successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Command updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid command format."
+          }
+        }
+      }
+    },
+    "/run/": {
+      "post": {
+        "summary": "Run a command",
+        "description": "Runs a command with an input file",
+        "parameters": [
+          {
+            "name": "inputFile",
+            "in": "body",
+            "description": "Path to the input file for the command",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "inputFile": {
+                  "type": "string",
+                  "example": "test.txt"
+                },
+                "outputFile": {
+                  "type": "string",
+                  "example": "output.txt"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Command execution result.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "stdout": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "stdout": "Command executed successfully."
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input file or other error."
+          }
+        }
+      }
     }
   }
 }
