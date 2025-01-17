@@ -15,28 +15,20 @@ def set_command():
         return jsonify({"error": "Command is required"}), 400
     
     currentCommand = new_command
-    return jsonify({"message": "Command updated successfully"}), 200
+    return jsonify({"message": "Command updated successfully to "+currentCommand}), 200
 
 
 @run_bp.route('/', methods=['POST'])
 def run_command():
-    data = request.get_json()
-    inputFile = data.get('inputFile')
-    outputFile = data.get('outputFile') 
+  
+    try:
+        data = request.get_json()
+        command = currentCommand
+        for k, v in data.items():
+            command = command.replace('{'+str(k)+'}', str(v))
 
-    if inputFile:
-        if not os.path.exists(inputFile):
-            return jsonify({"error": "Invalid input file"}), 400
-        command = currentCommand.replace('{inputFile}', inputFile)
-    else:
-        command = currentCommand.replace('{inputFile}', 'default_value')
+        result = os.popen(command).read()
+        return jsonify({"stdout": result}), 200 
+    except Exception as err:
+        return jsonify({"error": str(err)}), 400
 
-    if outputFile:
-        command = command.replace('{outputFile}', outputFile)
-        command += f" && echo 'The output file is: {outputFile}'"
-    else:
-        return jsonify({"error": "Output file is required"}), 400
-    
-    result = os.popen(command).read()
-    
-    return jsonify({"stdout": result}), 200

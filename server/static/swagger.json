@@ -34,7 +34,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Sentiment analysis result.\nIf the text in input contains the word 'good', then the result is happy. It is a proof of concept, with confidence always at 95%.",
+            "description": "Sentiment analysis result.\nIf the text in input contains the word 'good', then the result is 'happy'. It is a proof of concept, with confidence always at 95%.",
             "schema": {
               "type": "object",
               "properties": {
@@ -69,14 +69,14 @@
           {
             "name": "command",
             "in": "body",
-            "description": "New command to be executed.\nUse {inputFile} as a placeholder for the input file.\nUse {outputFile} as a placeholder for the output file.",
+            "description": "New command to be executed.\nUse {param1..n} as a placeholder for input parameters",
             "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "command": {
                   "type": "string",
-                  "example": "cat {inputFile} > {outputFile}"
+                  "example": "echo {param1} {param2}"
                 }
               }
             }
@@ -104,24 +104,24 @@
     "/run/": {
       "post": {
         "summary": "Run a command",
-        "description": "Runs a command with an input file",
+        "description": "Runs the command with input parameters",
         "parameters": [
           {
-            "name": "inputFile",
+            "name": "params",
             "in": "body",
-            "description": "Path to the input file for the command",
+            "description": "parameter(s) for the command",
             "required": false,
             "schema": {
               "type": "object",
               "properties": {
-                "inputFile": {
+                "param1": {
                   "type": "string",
-                  "example": "test.txt"
+                  "example": "Hello World!"
                 },
-                "outputFile": {
+                "param2": {
                   "type": "string",
-                  "example": "output.txt"
-                }
+                  "example": "$(date) $(pwd)"
+                }              
               }
             }
           }
