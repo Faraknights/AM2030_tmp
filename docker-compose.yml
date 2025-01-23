@@ -8,3 +8,17 @@ services:
     environment:
       - FLASK_ENV=${FLASK_ENV}
       - SECRET_KEY=${SECRET_KEY}
+
+  react-ui:
+    build:
+      context: .
+      dockerfile: ./react-ui/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react-ui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

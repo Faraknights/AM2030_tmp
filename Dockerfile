@@ -1,15 +1,22 @@
 FROM python:3.12-slim
 
+# Set the working directory
 WORKDIR /app
-COPY . /app
 
-ENV PYTHONPATH=/app
+# Copy only the requirements.txt first to optimize caching
+COPY requirements.txt /app/
 
-RUN pip install flask
-
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-#I temporarily place the server on 127.0.0.1:5000
+# Copy the rest of the application code
+COPY . /app/
+
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/app
+
+# Expose the port for Flask
 EXPOSE 5000
 
+# Run the Flask app
 CMD ["python", "server/app.py"]
