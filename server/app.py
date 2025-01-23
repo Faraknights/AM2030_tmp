@@ -4,7 +4,10 @@ from endpoints.run import run_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
 import os
-from config import Config
+import json
+
+with open('server/config.json') as config_file:
+    config_data = json.load(config_file)
 
 app = Flask(__name__)
 CORS(app)
@@ -28,4 +31,4 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
+    app.run(host=config_data['HOST'], port=config_data['PORT'], debug=config_data['DEBUG'])
