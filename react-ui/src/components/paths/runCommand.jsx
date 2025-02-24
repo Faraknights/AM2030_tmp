@@ -21,6 +21,7 @@ const RunCommand = () => {
 				body: JSON.stringify(paramData),
 			});
 			const data = await response.json();
+			console.log(data)
 			setResponseMessage(data.stdout || data.error);
 			setStatus(response.status);
 		} catch (error) {
@@ -76,11 +77,13 @@ const RunCommand = () => {
 						<button className="addParam" onClick={addParam}>Add Parameter</button>
 					</div>
 					<button className="execute" onClick={handleRunCommand}>Run Command</button>
-					<span className="resultTitle">Status: {status}</span>
 					{responseMessage && (
-						<div className={`result ${status === 200 ? "success" : "fail"}`}>
-							<div>{responseMessage}</div>
-						</div>
+						<>
+							<span className="resultTitle">Status: {status}</span>
+							<div className={`result ${status === 200 ? "success" : "fail"}`}>
+								<div>{responseMessage}</div>
+							</div>
+						</>
 					)}
 				</div>
 			}
