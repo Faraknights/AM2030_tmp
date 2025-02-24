@@ -1,5 +1,6 @@
 import './App.css';
-import MicrophoneTest from './components/paths/microphoneTest';
+import AudioSelection from './components/paths/audioSelection';
+import EmotionRecognition from './components/paths/emotionRecognition';
 import RunCommand from './components/paths/runCommand';
 import SentimentAnalysis from './components/paths/sentimentAnalysis';
 import SetCommand from './components/paths/setCommand';
@@ -13,7 +14,8 @@ function App() {
         <SentimentAnalysis/>
         <SetCommand/>
         <RunCommand/>
-        <MicrophoneTest/>
+        <AudioSelection/>
+        <EmotionRecognition/>
       </div>
     </div>
   );
