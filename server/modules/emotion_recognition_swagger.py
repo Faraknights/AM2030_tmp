@@ -4,7 +4,6 @@ import warnings
 import logging
 import json
 import base64
-import platform
 import uuid
 from pydub import AudioSegment
 AudioSegment.ffmpeg = r'C:\ffmpeg\bin\ffmpeg.exe'
@@ -135,15 +134,14 @@ def analyze_emotion(data_file):
         # If any files are missing, use gdown to download them
         if 'bert_classifier.pth' in missing_files:
             subprocess.run(['gdown', '1RafePeKexhfyJBNGm10JyBQPSFyNi_Jd'], check=True)
+            # Move the file to ./ckpts
+            subprocess.run(['mv', 'bert_classifier.pth', './ckpts'], check=True)
+
         if 'exp6_results_slurm.pth' in missing_files:
             subprocess.run(['gdown', '15V2D-eDcrYIpun7MtYZS2BA3XJUvTy3x'], check=True)
-        # Move downloaded files (assuming they are named as required_files)
-        if platform.system() == 'Windows':
-            # On Windows, use the 'move' command with wildcard
-            subprocess.run(['move', '*.pth', './ckpts'], shell=True, check=True)
-        else:
-            # On Linux/macOS, use 'mv' with wildcard
-            subprocess.run(['mv', '*.pth', './ckpts'], check=True)
+            # Move the file to ./ckpts
+            subprocess.run(['mv', 'exp6_results_slurm.pth', './ckpts'], check=True)
+
     text_classifier_path = './ckpts/bert_classifier.pth'
     speech_classifier_path = './ckpts/exp6_results_slurm.pth'
     if not os.path.exists('./data'):
