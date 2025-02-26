@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const Accordion = (params) => {
-  const {title, content} = params
+const Accordion = ({ title, content }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const contentRef = useRef(null);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }
+  }, [content]);
 
   return (
     <div className="accordion">
@@ -18,7 +24,7 @@ const Accordion = (params) => {
           <div className='arrow'></div>
           {title}
         </button>
-        <div className={`accordion-content ${isOpen ? 'show' : ''}`}>
+        <div className={`accordion-content ${isOpen ? 'show' : ''}`} ref={contentRef}>
           <div>
             {content}
           </div>

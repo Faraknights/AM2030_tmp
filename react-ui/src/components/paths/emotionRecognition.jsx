@@ -37,10 +37,6 @@ const EmotionRecognition = () => {
 						<span>
 							This module will recognize the emotion in the audio sent through the module <strong>[Audio Selection]</strong>. It will first segment if asked, then transcribe the text before analyzing the emotion in the voice and the text, combining probabilities to get a final decision on the emotion.
 						</span>
-						<br />
-						<span className="note" style={{ color: "red", fontStyle: "italic" }}>
-							Be aware that the first time this module is run, it will take more time as it needs to download <strong>Bert_classifier.pth</strong> and <strong>exp6_results_slurm.pth</strong>, which are ~1.5GB.
-						</span>
 					</span>
 					<button 
 						className={`execute ${isLoading ? "disabled" : ""}`} 
