@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const TextInput = ({ defaultValue }) => {
-  const [value, setValue] = useState(defaultValue || "");
-
+const TextInput = ({ value, setValue, placeholder = "", hasError = false }) => {
   return (
-    <input  className={"textInput"} value={value} onChange={(e) => setValue(e.target.value)} />
+    <div className="textInputContainer">
+      <input 
+        className={`textInput ${hasError ? 'error' : ''}`} 
+        value={value} 
+        onChange={(e) => setValue(e.target.value)} 
+      />
+      <label className={`textInputLabel ${value ? 'active' : ''}`}>{placeholder}</label>
+    </div>
   );
 };
 
