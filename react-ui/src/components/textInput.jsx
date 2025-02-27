@@ -1,8 +1,8 @@
 import React from 'react';
 
-const TextInput = ({ value, setValue, placeholder = "", hasError = false }) => {
+const TextInput = ({ value, setValue, placeholder = "", hasError = false, className}) => {
   return (
-    <div className="textInputContainer">
+    <div className={ "textInputContainer " + className}>
       <input 
         className={`textInput ${hasError ? 'error' : ''}`} 
         value={value} 

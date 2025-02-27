@@ -41,6 +41,7 @@ const AudioSelection = () => {
               encoded_audio: base64,
               audioUrl: audioUrl,
               segment: "F",
+              transcription: "", // Add transcription field
             },
           ]);
         };
@@ -82,6 +83,14 @@ const AudioSelection = () => {
     });
   };
 
+  const updateAudioFileTranscription = (index, newTranscription) => {
+    setAudioFiles((prevFiles) => {
+      const updatedFiles = [...prevFiles];
+      updatedFiles[index] = { ...updatedFiles[index], transcription: newTranscription };
+      return updatedFiles;
+    });
+  };
+
   const sendAudioToBackend = async (audioData, index) => {
     if (audioData) {
       try {
@@ -90,7 +99,7 @@ const AudioSelection = () => {
           encoded_audio: audioData.encoded_audio,
           ID: audioData.ID,
           segment: audioData.segment,
-          transcription: "",
+          transcription: audioData.transcription, // Include transcription in request
         };
 
         const response = await fetch("http://localhost:5000/asr/", {
@@ -130,7 +139,8 @@ const AudioSelection = () => {
                 ID: jsonData.ID,
                 encoded_audio: jsonData.encoded_audio,
                 audioUrl: `data:audio/wav;base64,${jsonData.encoded_audio}`,
-                segment: jsonData.segment || "F", // Use segment from JSON or default
+                segment: jsonData.segment || "F",
+                transcription: jsonData.transcription || "", // Include transcription from JSON
               },
             ]);
           } catch (error) {
@@ -153,7 +163,8 @@ const AudioSelection = () => {
                 ID: fileNameWithoutExtension,
                 encoded_audio: base64,
                 audioUrl: audioUrl,
-                segment: "F", 
+                segment: "F",
+                transcription: "", // Add transcription field
               },
             ]);
           };
@@ -183,7 +194,8 @@ const AudioSelection = () => {
             ID: fileData.ID,
             encoded_audio: fileData.encoded_audio,
             audioUrl: `data:audio/wav;base64,${fileData.encoded_audio}`,
-            segment: fileData.segment || "F", // Use segment from JSON or default
+            segment: fileData.segment || "F",
+            transcription: fileData.transcription || "", // Include transcription from JSON
           };
         });
 
@@ -227,33 +239,55 @@ const AudioSelection = () => {
           Allows users to record audio, select preloaded audio files, upload new files in .wav or .json format, and send them to a backend for later processing. It also allows users to download the files in .wav or .json format.
           </span>
           {audioFiles.map((file, index) => (
-            <div key={index} className="audio-row">
-              <span className="number">{index + 1}.</span>
-              <TextInput
-                value={file.ID}
-                setValue={(newID) => updateAudioFileID(index, newID)}
-                placeholder="Audio ID"
-                hasError={file.ID === ""}
-              />
-              <SelectInput
-                value={file.segment}
-                setValue={(newSegment) => updateAudioFileSegment(index, newSegment)}
-                placeholder="Segment"
-                options={[
-                  { value: 'F', text: 'False' },
-                  { value: 'T', text: 'True' }
-                ]}
-              />
-              <audio controls src={file.audioUrl}></audio>
-              <button
-                onClick={() => sendAudioToBackend(file, index)}
-                className={`sendAudioButton ${disabledButton === index ? "disabled" : ""}`}
-              >
-                {disabledButton === index ? "Audio sent" : "Send Audio to Backend"}
-              </button>
-              <button className="download" title="Download JSON file" onClick={() => downloadJsonFile(file)}>{"{ }"}</button>
-              <button className="download" title="Download .wav file" onClick={() => downloadWavFile(file)}>.wav</button>
-            </div>
+            <>
+              <div key={index} className="audio-row">
+                <span className="number">{index + 1}.</span>
+                <TextInput
+                  value={file.ID}
+                  setValue={(newID) => updateAudioFileID(index, newID)}
+                  placeholder="Audio ID"
+                  hasError={file.ID === ""}
+                />
+                <SelectInput
+                  value={file.segment}
+                  setValue={(newSegment) => updateAudioFileSegment(index, newSegment)}
+                  placeholder="Segment"
+                  options={[
+                    { value: 'F', text: 'False' },
+                    { value: 'T', text: 'True' }
+                  ]}
+                />
+                <audio controls src={file.audioUrl}></audio>
+                <button
+                  onClick={() => sendAudioToBackend(file, index)}
+                  className={`sendAudioButton ${disabledButton === index ? "disabled" : ""}`}
+                >
+                  {disabledButton === index ? "Audio sent" : "Send Audio to Backend"}
+                </button>
+                <button className="download" title="Download JSON file" onClick={() => downloadJsonFile(file)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
+                    <polyline points="8 12 12 16 16 12" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
+                    <path d="M5 21H19M12 3V16" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
+                  </svg>
+                  <span>.json</span>
+                </button>
+
+                <button className="download" title="Download .wav file" onClick={() => downloadWavFile(file)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
+                    <polyline points="8 12 12 16 16 12" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
+                    <path d="M5 21H19M12 3V16" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
+                  </svg>
+                  <span>.wav</span>
+                </button>
+                <TextInput
+                  className={"transcript"}
+                  value={file.transcription}
+                  setValue={(newTranscription) => updateAudioFileTranscription(index, newTranscription)}
+                  placeholder="Transcription"
+                />
+                <div className="vertical"><div></div></div>
+              </div>
+            </>
           ))}
           <div className="separation"></div>
           <div className="horizontal">
