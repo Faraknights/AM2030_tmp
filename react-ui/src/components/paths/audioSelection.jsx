@@ -41,7 +41,7 @@ const AudioSelection = () => {
               encoded_audio: base64,
               audioUrl: audioUrl,
               segment: "F",
-              transcription: "", // Add transcription field
+              transcription: "", 
             },
           ]);
         };
@@ -99,7 +99,7 @@ const AudioSelection = () => {
           encoded_audio: audioData.encoded_audio,
           ID: audioData.ID,
           segment: audioData.segment,
-          transcription: audioData.transcription, // Include transcription in request
+          transcription: audioData.transcription, 
         };
 
         const response = await fetch("http://localhost:5000/asr/", {
@@ -140,7 +140,7 @@ const AudioSelection = () => {
                 encoded_audio: jsonData.encoded_audio,
                 audioUrl: `data:audio/wav;base64,${jsonData.encoded_audio}`,
                 segment: jsonData.segment || "F",
-                transcription: jsonData.transcription || "", // Include transcription from JSON
+                transcription: jsonData.transcription || "", 
               },
             ]);
           } catch (error) {
@@ -164,7 +164,7 @@ const AudioSelection = () => {
                 encoded_audio: base64,
                 audioUrl: audioUrl,
                 segment: "F",
-                transcription: "", // Add transcription field
+                transcription: "", 
               },
             ]);
           };
@@ -195,7 +195,7 @@ const AudioSelection = () => {
             encoded_audio: fileData.encoded_audio,
             audioUrl: `data:audio/wav;base64,${fileData.encoded_audio}`,
             segment: fileData.segment || "F",
-            transcription: fileData.transcription || "", // Include transcription from JSON
+            transcription: fileData.transcription || "",
           };
         });
 
