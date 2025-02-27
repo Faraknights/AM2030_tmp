@@ -110,6 +110,30 @@ body {
   position: relative;
 }
 
+.textInputContainer.disabled{
+  cursor: not-allowed;
+  background-color: rgb(243, 243, 243);
+  border-style: dashed;
+}
+
+.textInputContainer.disabled > label::after{
+  content: ' - ⓘ Disabled when [Segment] is True';
+  font-size: small;
+}
+.textInputContainer.disabled{
+  cursor: not-allowed;
+  background-color: rgb(231, 231, 231);
+}
+
+.textInputContainer.disabled > label{
+  color: rgb(71, 71, 71);
+}
+
+
+.textInputContainer.disabled > *{
+  pointer-events: none;
+}
+
 .textInputContainer label{
   position: absolute;
   pointer-events: none;

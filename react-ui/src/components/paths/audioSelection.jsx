@@ -280,8 +280,8 @@ const AudioSelection = () => {
                   <span>.wav</span>
                 </button>
                 <TextInput
-                  className={"transcript"}
-                  value={file.transcription}
+                  className={"transcript " + (file.segment === "T" ? "disabled" : "")}
+                  value={file.segment === "T" ? "" : file.transcription}
                   setValue={(newTranscription) => updateAudioFileTranscription(index, newTranscription)}
                   placeholder="Transcription"
                 />
