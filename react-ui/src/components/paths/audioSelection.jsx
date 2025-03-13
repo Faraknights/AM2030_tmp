@@ -91,6 +91,10 @@ const AudioSelection = () => {
     });
   };
 
+  const deleteAudioFile = (index) => {
+    setAudioFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
   const sendAudioToBackend = async (audioData, index) => {
     if (audioData) {
       try {
@@ -238,7 +242,8 @@ const AudioSelection = () => {
           <span className="description">
           Allows users to record audio, select preloaded audio files, upload new files in .wav or .json format, and send them to a backend for later processing. It also allows users to download the files in .wav or .json format.
           </span>
-          {audioFiles.map((file, index) => (
+
+          {(audioFiles.length && audioFiles.map((file, index) => (
             <>
               <div key={index} className="audio-row">
                 <span className="number">{index + 1}.</span>
@@ -264,6 +269,7 @@ const AudioSelection = () => {
                 >
                   {disabledButton === index ? "Audio sent" : "Send Audio to Backend"}
                 </button>
+                <div className="vertical one"><div></div></div>
                 <button className="download" title="Download JSON file" onClick={() => downloadJsonFile(file)}>
                   <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
                     <polyline points="8 12 12 16 16 12" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
@@ -271,7 +277,6 @@ const AudioSelection = () => {
                   </svg>
                   <span>.json</span>
                 </button>
-
                 <button className="download" title="Download .wav file" onClick={() => downloadWavFile(file)}>
                   <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon">
                     <polyline points="8 12 12 16 16 12" fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" />
@@ -285,10 +290,21 @@ const AudioSelection = () => {
                   setValue={(newTranscription) => updateAudioFileTranscription(index, newTranscription)}
                   placeholder="Transcription"
                 />
-                <div className="vertical"><div></div></div>
+                <div className="vertical two"><div></div></div>
+                <button onClick={() => deleteAudioFile(index)} className="deleteButton">
+                  <svg width="25px" height="25px" viewBox="0 0 32 32" id="Outlined" xmlns="http://www.w3.org/2000/svg">
+                    <g id="Fill">
+                      <rect height="12" width="2" x="15" y="12"/>
+                      <rect height="12" width="2" x="19" y="12"/>
+                      <rect height="12" width="2" x="11" y="12"/>
+                      <path d="M20,6V5a3,3,0,0,0-3-3H15a3,3,0,0,0-3,3V6H4V8H6V27a3,3,0,0,0,3,3H23a3,3,0,0,0,3-3V8h2V6ZM14,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H14ZM24,27a1,1,0,0,1-1,1H9a1,1,0,0,1-1-1V8H24Z"/>
+                    </g>
+                  </svg>
+                </button>
               </div>
             </>
-          ))}
+          ))) || <span className="noAudio">No audio Created</span>}
+
           <div className="separation"></div>
           <div className="horizontal">
             <button className={`recordingButton ${isRecording ? "recording" : ""}`} onClick={() => setIsRecording(!isRecording)}>
