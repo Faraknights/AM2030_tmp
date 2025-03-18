@@ -24,6 +24,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+ADD "https://download.pytorch.org/torchaudio/models/wavlm_large.pth" /root/.cache/torch/hub/checkpoints/wavlm_large.pth
+
 COPY . .
 
 EXPOSE 5000
