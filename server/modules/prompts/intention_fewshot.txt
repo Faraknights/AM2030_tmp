@@ -1,0 +1,14 @@
+Identify the action and argument in the following statement. The action should be a single verb representing the main intent, and the argument should be a simple noun.
+Examples:
+	Statement1: 'How can I go to that restaurant?'
+	Output:
+		Action: go
+		Argument: restaurant
+	Statement2: 'So I need to sign up for a savings account.'
+	Output:
+		Action: open
+		Argument: account
+	Statement3: 'Can you help me schedule an appointment?'
+	Output:
+		Action: schedule
+		Argument: appointment

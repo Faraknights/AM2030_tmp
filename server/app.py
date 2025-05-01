@@ -27,6 +27,7 @@ def check_gpu():
 # Call demo_aniti.py on startup
 try:
     # Compute absolute path to demo_aniti.py
+    print("launch demo_aniti.py:")
     script_path = os.path.join(os.path.dirname(__file__), 'modules', 'demo_aniti.py')
     result = subprocess.run(
         [

@@ -1,0 +1,3 @@
+Identify the action and argument in the following statement. The action should be a single verb that represents the main intent of the statement, and the argument should be a simple noun representing the object or focus of the action. Present the result in the format:
+Action: [verb]
+Argument: [noun]
