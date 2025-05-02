@@ -8,9 +8,7 @@ import gc
 
 import pandas as pd
 from datasets import Dataset
-from sklearn.metrics import classification_report
 from torch import cuda
-from transformers import GenerationConfig, LlamaTokenizer
 from accelerate import Accelerator
 from llama_cpp import Llama
 
@@ -25,6 +23,7 @@ call_for_action = {
     "intention2": "The intention expressed in this utterance in the format verb-action_name is as follow: ",
     "generateResponse": ""
 }
+
 labels_dic = {
     "emotion":{
         'neutre': 'neutral',
@@ -35,7 +34,6 @@ labels_dic = {
         'degout': 'disgust',
         'peur': 'fear',
     },
-   
 }
 
 def load_prompt(file_name, folder="server/modules/prompts/"):
@@ -78,21 +76,11 @@ def format_conversation(row, label_col, text_col, task, domaine, input_dict_resp
     )
     return {"prompt_conv": prompt}
 
-def createDataset(input_file, separator, label_col, task, domaine, text_col, input_dict_response):
-    df = pd.read_csv(input_file, sep=separator, quotechar='"', dtype='str')
-    dataset = Dataset.from_pandas(df)
-    dataset = dataset.map(
-        lambda element: format_conversation(element, label_col, text_col, task, domaine, input_dict_response),
-        # remove_columns=dataset.column_names.remove(label_col), # remove all columns; only "text" will be left
-        num_proc=os.cpu_count()  # multithreaded
-    )
-    return dataset
-
 def extract_intention(response):
     match = re.search(r"\b(\w+)\s*-\s*(\w+)\b", response)
     return f"{match.group(1)}-{match.group(2)}" if match else None
 
-def extract_label_or_text(text, task, domaine, fr=True):
+def extract_label_or_text(text, domaine, fr=True):
     print("text in extract_label_or_text", text, "\n*******")
     # text=text[0]['generated_text']
     # print("text before index1:", text)
@@ -139,8 +127,7 @@ def extract_label_or_text(text, task, domaine, fr=True):
         return "No classification: "+en_labels[0] + ":: " + text # return neutral as a default + the text
     return text
 
-def classify(device_name, file_test, separator, label_col, task, domaine, text_col, max_new_tokens, input_dict_response):
-  try:
+def classify(device_name, user_sentence, task, domaine, input_dict_response):
     print("[INFO]", datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), "Loading trained model...")
 
     model_path = "/models/Emollama-7b.i1-Q4_K_M.gguf"
@@ -154,73 +141,28 @@ def classify(device_name, file_test, separator, label_col, task, domaine, text_c
 
     print("[INFO]", datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), "Model loaded successfully.")
 
-    prompt = format_conversation(file_test, False, False, task, domaine, input_dict_response)
-    print("[DEBUG] Prompt sample:", prompt[:200], "..." if len(prompt) > 200 else "")
+    prompt = format_conversation(user_sentence, False, False, task, domaine, input_dict_response)
 
-    tokens = model.tokenize(prompt.encode('utf-8'))
-    print("[DEBUG] Tokenized input length:", len(tokens))
+    output = model(prompt, max_tokens=512, stop=["</s>", "User:", "Assistant:"], temperature=0.7)
 
-    generated_tokens = model.generate(tokens=tokens)
-
-    print("[INFO]", datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), "Decoding output...")
-
-    generated_text = model.detokenize(generated_tokens)
-
-    classification = extract_label_or_text(generated_text, task, domaine)
-
-    print("[RESULT]", classification)
-    print("[INFO]", datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), "\n---------------------------------")
+    classification = extract_label_or_text(output["choices"][0]["text"], domaine)
 
     return classification
 
-  except Exception as e:
-    print("[ERROR]", datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), f"An error occurred: {e}")
-    return None
+def run_classification(domaine: str, task: str, input_data: str, input_dict_response: str = ""):
 
-def main():
-  gc.collect()
-  print(len(sys.argv), "Begin: Current Time =", datetime.now().strftime("%H:%M:%S %d/%m/%Y"))
+    gc.collect()
+    print("Begin: Current Time =", datetime.now().strftime("%H:%M:%S %d/%m/%Y"))
 
-  if len(sys.argv) < 5:
-    print("Please provide model and task.")
-    sys.exit(1)
+    if domaine != "generateResponse" and not (input_data and task):
+        raise ValueError("For classification tasks, input_data and task must be provided.")
     
-    # Convert arguments to integers and sum them
-    # try:
-  prompt_type = str(sys.argv[1])
-  domaine = str(sys.argv[2])
-  task = str(sys.argv[3])
-  input_data= str(sys.argv[4])
-  input_dict_response = ""
-  if domaine=="generateResponse":
-     input_dict_response = sys.argv[5]
-    #  input_dict_response = json.loads(sys.argv[6])
-  elif len(sys.argv) > 5 and len(sys.argv) < 7: #can not test answer with a file
-    print("Please provide text_col, label_col.")
-    sys.exit(1)
-  
-  text_col=""
-  label_col = ""
-  if len(sys.argv) > 6:
-    text_col = str(sys.argv[5])
-    label_col = str(sys.argv[6])
-  max_new_tokens = int(sys.argv[7]) if len(sys.argv)>7 else 15
-  separator = str(sys.argv[8]) if len(sys.argv)>8 else "\t"
-  
-  accelerator = Accelerator()
-  device_name = 'cuda:0' if cuda.is_available() else 'cpu'
-  device = accelerator.prepare(device_name)
+    if domaine == "generateResponse" and not input_dict_response:
+        raise ValueError("For 'generateResponse' domaine, input_dict_response must be provided.")
 
-  print ("device_name=",device_name, input_data, text_col, label_col, task, domaine, prompt_type, max_new_tokens, str(separator))
+    device_name = 'cuda:0' if cuda.is_available() else 'cpu'
 
-  classify(device_name, input_data, separator, label_col, task, domaine, text_col, max_new_tokens, input_dict_response)
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
+    return classify(device_name, input_data, task, domaine, input_dict_response)
 
 # exemple commandes:
 # python demo_aniti.py "lzw1008/Emollama-chat-7b" "basic" "emotion" "systemMELD" "ca m'enerve pourquoi tu me dis ca a chaque fois"

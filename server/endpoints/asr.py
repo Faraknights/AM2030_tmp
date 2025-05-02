@@ -3,7 +3,6 @@ import base64
 import os
 import uuid
 import json
-from modules.demo_aniti import main as analyze_emotion  # Adjust based on your import path
 
 emotion_bp = Blueprint('emotion', __name__)
 
@@ -29,12 +28,13 @@ def get_emotion():
 
     try:
         print("start of the analyse")
-        emotion_result = analyze_emotion(data) 
+        #emotion_result = analyze_emotion(data) 
         print("end of the analyse")
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in emotion recognition", "message": str(e)}), 500
 
-    return jsonify({
-        "emotion": emotion_result
-    })
+    #return jsonify({
+    #    "emotion": emotion_result
+    #})
+    return {}

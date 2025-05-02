@@ -6,6 +6,8 @@ import json
 import subprocess
 import torch
 
+from modules.demo_aniti import run_classification 
+
 CONFIG_PATH = 'server/config.json'
 if not os.path.exists(CONFIG_PATH):
     raise FileNotFoundError(f"Config file not found: {CONFIG_PATH}")
@@ -26,23 +28,7 @@ def check_gpu():
 
 # Call demo_aniti.py on startup
 try:
-    # Compute absolute path to demo_aniti.py
-    print("launch demo_aniti.py:")
-    script_path = os.path.join(os.path.dirname(__file__), 'modules', 'demo_aniti.py')
-    result = subprocess.run(
-        [
-            "python3",
-            script_path,
-            "basic",
-            "emotion",
-            "systemMELD", 
-            "ca m'enerve pourquoi tu me dis ca a chaque fois"
-        ],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    print("demo_aniti.py output:", result.stdout)
+    result = run_classification("emotion", "systemMELD", "ca m'enerve pourquoi tu me dis ca a chaque fois")
 except subprocess.CalledProcessError as e:
     print("Error calling demo_aniti.py:", e)
     print("Standard output:", e.stdout)
