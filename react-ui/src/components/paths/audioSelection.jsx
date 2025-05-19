@@ -3,12 +3,8 @@ import Accordion from "../accordion";
 import TextInput from "../textInput";
 import SelectInput from "../selectInput";
 
-const AudioSelection = () => {
-  const [audioFiles, setAudioFiles] = useState([]);
+const AudioSelection = ({ audioFiles, setAudioFiles, selectedAudio, setSelectedAudio }) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [responseMessage, setResponseMessage] = useState("");
-  const [status, setStatus] = useState(null);
-  const [disabledButton, setDisabledButton] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -28,24 +24,43 @@ const AudioSelection = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
         audioChunksRef.current = [];
         const audioUrl = URL.createObjectURL(audioBlob);
-
+      
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
-        reader.onloadend = () => {
+      
+        reader.onloadend = async () => {
           const base64 = reader.result.split(",")[1];
-
-          setAudioFiles((prevFiles) => [
-            ...prevFiles,
-            {
-              ID: `Recorded_${prevFiles.length + 1}`,
-              encoded_audio: base64,
-              audioUrl: audioUrl,
-              segment: "F",
-              transcription: "", 
-            },
-          ]);
+      
+          try {
+            const response = await fetch("http://localhost:5000/asr/transcribe", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                encoded_audio: base64, // This matches what your Flask route expects
+              }),
+            });
+      
+            const result = await response.json();
+            const transcription = result.transcription || "";
+      
+            setAudioFiles((prevFiles) => [
+              ...prevFiles,
+              {
+                ID: `Recorded_${prevFiles.length + 1}`,
+                encoded_audio: base64,
+                audioUrl: audioUrl,
+                segment: "F",
+                transcription: transcription,
+              },
+            ]);
+          } catch (error) {
+            console.error("Transcription failed:", error);
+          }
         };
       };
+           
 
       mediaRecorderRef.current.start();
     } catch (error) {
@@ -65,6 +80,7 @@ const AudioSelection = () => {
     } else {
       stopRecording();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRecording]);
 
   const updateAudioFileID = (index, newID) => {
@@ -95,33 +111,9 @@ const AudioSelection = () => {
     setAudioFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
-  const sendAudioToBackend = async (audioData, index) => {
+  const sendSelectAudio = (audioData, index) => {
     if (audioData) {
-      try {
-        setDisabledButton(index);
-        const requestData = {
-          encoded_audio: audioData.encoded_audio,
-          ID: audioData.ID,
-          segment: audioData.segment,
-          transcription: audioData.transcription, 
-        };
-
-        const response = await fetch("http://localhost:5000/asr/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        });
-
-        const data = await response.json();
-        setResponseMessage(data.message || data.error);
-        setStatus(response.status);
-      } catch (error) {
-        console.error("Error running command:", error);
-        setResponseMessage(error.message);
-        setStatus(500);
-      }
+      setSelectedAudio(index);
     }
   };
 
@@ -181,38 +173,6 @@ const AudioSelection = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchAudioFiles = async () => {
-      try {
-        const fileList = [
-          "Test_IDoNotBelieveYou.json",
-          "Test_What.json",
-          "Conversation.json",
-        ];
-
-        const fileDataPromises = fileList.map(async (fileName) => {
-          const fileResponse = await fetch(`/audioSamples/${fileName}`);
-          const fileData = await fileResponse.json();
-
-          return {
-            ID: fileData.ID,
-            encoded_audio: fileData.encoded_audio,
-            audioUrl: `data:audio/wav;base64,${fileData.encoded_audio}`,
-            segment: fileData.segment || "F",
-            transcription: fileData.transcription || "",
-          };
-        });
-
-        const files = await Promise.all(fileDataPromises);
-        setAudioFiles(files);
-      } catch (error) {
-        console.error("Error fetching audio files:", error);
-      }
-    };
-
-    fetchAudioFiles();
-  }, []);
-
   const downloadWavFile = (audioData) => {
     const audioBlob = new Blob([new Uint8Array(atob(audioData.encoded_audio).split("").map(c => c.charCodeAt(0)))], { type: "audio/wav" });
     const url = URL.createObjectURL(audioBlob);
@@ -264,10 +224,10 @@ const AudioSelection = () => {
                 />
                 <audio controls src={file.audioUrl}></audio>
                 <button
-                  onClick={() => sendAudioToBackend(file, index)}
-                  className={`sendAudioButton ${disabledButton === index ? "disabled" : ""}`}
+                  onClick={() => sendSelectAudio(file, index)}
+                  className={`sendAudioButton ${selectedAudio === index ? "disabled" : ""}`}
                 >
-                  {disabledButton === index ? "Audio sent" : "Send Audio to Backend"}
+                  {selectedAudio === index ? "Audio selected" : "Select the audio"}
                 </button>
                 <div className="vertical one"><div></div></div>
                 <button className="download" title="Download JSON file" onClick={() => downloadJsonFile(file)}>
@@ -285,8 +245,8 @@ const AudioSelection = () => {
                   <span>.wav</span>
                 </button>
                 <TextInput
-                  className={"transcript " + (file.segment === "T" ? "disabled" : "")}
-                  value={file.segment === "T" ? "" : file.transcription}
+                  className={"transcript"}
+                  value={file.transcription}
                   setValue={(newTranscription) => updateAudioFileTranscription(index, newTranscription)}
                   placeholder="Transcription"
                 />
@@ -320,14 +280,6 @@ const AudioSelection = () => {
               />
             </label>
           </div>
-          {responseMessage && (
-            <>
-              <span className="resultTitle">Status: {status}</span>
-              <div className={`result ${status === 200 ? "success" : "fail"}`}>
-                <div>{responseMessage}</div>
-              </div>
-            </>
-          )}
         </div>
       }
     />

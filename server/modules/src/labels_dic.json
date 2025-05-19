@@ -1,0 +1,11 @@
+{
+    "emotion": {
+        "neutral": {"fr": "neutre", "eng": "neutral"},
+        "joy": {"fr": "joie", "eng": "joy"},
+        "anger": {"fr": "colere", "eng": "anger"},
+        "surprise": {"fr": "surprise", "eng": "surprise"},
+        "sadness": {"fr": "tristesse", "eng": "sadness"},
+        "disgust": {"fr": "degout", "eng": "disgust"},
+        "fear": {"fr": "peur", "eng": "fear"}
+    }
+}

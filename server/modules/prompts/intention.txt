@@ -1,1 +1,5 @@
-Analyze the following utterance from a conversation between a driver and a virtual car assistant. Identify the explicit intention by providing a verb followed by the topic. The intention should describe the specific action being requested by the driver, such as 'start-navigation', 'play-music', 'give_time'. 
+You are an intention classifier. Given the input utterance, output exactly one intention in the format verb-topic, describing the explicit action requested by the driver. 
+
+Examples include start-navigation, play-music, give-time.
+
+Utterance: {USER_TEXT}

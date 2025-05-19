@@ -292,14 +292,32 @@ body {
   white-space: pre;
   overflow: scroll;
   max-height: 200px;
+  font-size: medium;
+  background-color: #e7e7e7;
 }
 
-.result.success{
-  background-color: #bef6c2;
+.result > div{
+  display: flex;
+  flex-direction: column;
 }
 
-.result.fail{
-  background-color: #f7a4a4;
+.result > div:not(:last-of-type){
+  margin-bottom: 15px;
+}
+
+.result > div > span:first-of-type::before{
+  content: "text: \"";
+  font-weight: 600;
+}
+.result > div > span:first-of-type::after{
+  content: "\"";
+  font-weight: 600;
+}
+
+.result > div > span:last-of-type{
+  border-left: solid 5px rgb(22, 151, 190);
+  padding-left: 8px;
+  margin-top: 3px;
 }
 
 .paramPair{
@@ -560,4 +578,42 @@ body {
 .horizontal{
   display: flex;
   align-items: center;
+}
+
+.taskSelector{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.task{
+  width: 150px;
+  margin: 7px 0;
+  padding: 8px 4px;
+  font-size: medium;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+  background: rgb(241, 241, 241);
+  color: black;
+  cursor: pointer;
+  border: none;
+}
+
+.task.selected{
+  background: rgb(0, 77, 185);
+  background: linear-gradient(0deg, rgb(25, 138, 195) 0%, rgb(34, 191, 222) 100%);
+  color: white;
+  cursor: default;
+  pointer-events: none;
+  transform: scale(1.1);
+}
+
+.task[disabled].selected{
+  background: rgb(125, 125, 125);;
+}
+
+.task:not(:last-of-type){
+  margin-right: 40px;
 }
