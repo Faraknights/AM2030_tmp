@@ -15,7 +15,6 @@ RUN mkdir -p /models && \
 
 COPY . .
 
-# setting build related env vars
 ENV CUDA_DOCKER_ARCH=all
 ENV GGML_CUDA=1
 

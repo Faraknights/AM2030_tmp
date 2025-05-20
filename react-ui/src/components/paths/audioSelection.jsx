@@ -1,211 +1,208 @@
-import React, { useState, useEffect, useRef } from "react";
-import Accordion from "../accordion";
-import TextInput from "../textInput";
-import SelectInput from "../selectInput";
+  import React, { useState, useEffect, useRef } from "react";
+  import Accordion from "../accordion";
+  import TextInput from "../textInput";
+  import SelectInput from "../selectInput";
 
-const AudioSelection = ({ audioFiles, setAudioFiles, selectedAudio, setSelectedAudio }) => {
-  const [isRecording, setIsRecording] = useState(false);
+  const AudioSelection = ({ audioFiles, setAudioFiles, selectedAudio, setSelectedAudio }) => {
+    const [isRecording, setIsRecording] = useState(false);
 
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-        audioChunksRef.current = [];
-        const audioUrl = URL.createObjectURL(audioBlob);
-      
-        const reader = new FileReader();
-        reader.readAsDataURL(audioBlob);
-      
-        reader.onloadend = async () => {
-          const base64 = reader.result.split(",")[1];
-      
-          try {
-            const response = await fetch("http://localhost:5000/asr/transcribe", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                encoded_audio: base64, // This matches what your Flask route expects
-              }),
-            });
-      
-            const result = await response.json();
-            const transcription = result.transcription || "";
-      
-            setAudioFiles((prevFiles) => [
-              ...prevFiles,
-              {
-                ID: `Recorded_${prevFiles.length + 1}`,
-                encoded_audio: base64,
-                audioUrl: audioUrl,
-                segment: "F",
-                transcription: transcription,
-              },
-            ]);
-          } catch (error) {
-            console.error("Transcription failed:", error);
+    const startRecording = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+    
+        mediaRecorderRef.current.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
           }
         };
-      };
-           
-
-      mediaRecorderRef.current.start();
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  useEffect(() => {
-    if (isRecording) {
-      startRecording();
-    } else {
-      stopRecording();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRecording]);
-
-  const updateAudioFileID = (index, newID) => {
-    setAudioFiles((prevFiles) => {
-      const updatedFiles = [...prevFiles];
-      updatedFiles[index] = { ...updatedFiles[index], ID: newID };
-      return updatedFiles;
-    });
-  };
-
-  const updateAudioFileSegment = (index, newSegment) => {
-    setAudioFiles((prevFiles) => {
-      const updatedFiles = [...prevFiles];
-      updatedFiles[index] = { ...updatedFiles[index], segment: newSegment };
-      return updatedFiles;
-    });
-  };
-
-  const updateAudioFileTranscription = (index, newTranscription) => {
-    setAudioFiles((prevFiles) => {
-      const updatedFiles = [...prevFiles];
-      updatedFiles[index] = { ...updatedFiles[index], transcription: newTranscription };
-      return updatedFiles;
-    });
-  };
-
-  const deleteAudioFile = (index) => {
-    setAudioFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
-  const sendSelectAudio = (audioData, index) => {
-    if (audioData) {
-      setSelectedAudio(index);
-    }
-  };
-
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-
-    if (file) {
-      const fileReader = new FileReader();
-
-      fileReader.onloadend = async () => {
-        const fileContent = fileReader.result;
-
-        if (file.name.endsWith(".json")) {
-          try {
-            const jsonData = JSON.parse(fileContent);
-            setAudioFiles((prevFiles) => [
-              ...prevFiles,
-              {
-                ID: jsonData.ID,
-                encoded_audio: jsonData.encoded_audio,
-                audioUrl: `data:audio/wav;base64,${jsonData.encoded_audio}`,
-                segment: jsonData.segment || "F",
-                transcription: jsonData.transcription || "", 
-              },
-            ]);
-          } catch (error) {
-            console.error("Error parsing JSON:", error);
-          }
-        } else if (file.name.endsWith(".wav")) {
-          const arrayBuffer = await file.arrayBuffer();
-          const audioBlob = new Blob([arrayBuffer], { type: "audio/wav" });
+    
+        mediaRecorderRef.current.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+          audioChunksRef.current = [];
           const audioUrl = URL.createObjectURL(audioBlob);
-
+    
           const reader = new FileReader();
           reader.readAsDataURL(audioBlob);
-          reader.onloadend = () => {
+    
+          reader.onloadend = async () => {
             const base64 = reader.result.split(",")[1];
-            const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
-
-            setAudioFiles((prevFiles) => [
-              ...prevFiles,
-              {
-                ID: fileNameWithoutExtension,
-                encoded_audio: base64,
-                audioUrl: audioUrl,
-                segment: "F",
-                transcription: "", 
-              },
-            ]);
+            let transcription = "";
+    
+            try {
+              const response = await fetch("http://localhost:5000/asr/transcribe", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ encoded_audio: base64 }),
+              });
+    
+              const result = await response.json();
+              transcription = result.transcription || "";
+            } catch (error) {
+              console.error("Transcription failed:", error);
+            } finally {
+              setAudioFiles((prevFiles) => [
+                ...prevFiles,
+                {
+                  ID: `audioFile_${Date.now()}`,
+                  encoded_audio: base64,
+                  audioUrl: audioUrl,
+                  segment: "F",
+                  transcription: transcription,
+                },
+              ]);
+            }
           };
-        } else {
-          alert("Please upload a valid .wav or .json file.");
-        }
-      };
+        };
+    
+        mediaRecorderRef.current.start();
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+      }
+    };
+    
+    const stopRecording = () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+    };
 
-      fileReader.readAsText(file);
-    }
-  };
+    useEffect(() => {
+      if (isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isRecording]);
 
-  const downloadWavFile = (audioData) => {
-    const audioBlob = new Blob([new Uint8Array(atob(audioData.encoded_audio).split("").map(c => c.charCodeAt(0)))], { type: "audio/wav" });
-    const url = URL.createObjectURL(audioBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${audioData.ID}.wav`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+    const updateAudioFileID = (index, newID) => {
+      setAudioFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles];
+        updatedFiles[index] = { ...updatedFiles[index], ID: newID };
+        return updatedFiles;
+      });
+    };
 
-  const downloadJsonFile = (audioData) => {
-    const jsonData = JSON.stringify(audioData);
-    const blob = new Blob([jsonData], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${audioData.ID}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+    const updateAudioFileSegment = (index, newSegment) => {
+      setAudioFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles];
+        updatedFiles[index] = { ...updatedFiles[index], segment: newSegment };
+        return updatedFiles;
+      });
+    };
 
-  return (
-    <Accordion
-      title="Audio selection"
-      content={
-        <div className="audio-list">
-          <span className="description">
-          Allows users to record audio, select preloaded audio files, upload new files in .wav or .json format, and send them to a backend for later processing. It also allows users to download the files in .wav or .json format.
-          </span>
+    const updateAudioFileTranscription = (index, newTranscription) => {
+      setAudioFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles];
+        updatedFiles[index] = { ...updatedFiles[index], transcription: newTranscription };
+        return updatedFiles;
+      });
+    };
 
-          {(audioFiles.length && audioFiles.map((file, index) => (
-            <>
-              <div key={index} className="audio-row">
+    const deleteAudioFile = (index) => {
+      setAudioFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const sendSelectAudio = (audioData, index) => {
+      if (audioData) {
+        setSelectedAudio(index);
+      }
+    };
+
+    const handleFileUpload = async (event) => {
+      const file = event.target.files[0];
+
+      if (file) {
+        const fileReader = new FileReader();
+
+        fileReader.onloadend = async () => {
+          const fileContent = fileReader.result;
+
+          if (file.name.endsWith(".json")) {
+            try {
+              const jsonData = JSON.parse(fileContent);
+              setAudioFiles((prevFiles) => [
+                ...prevFiles,
+                {
+                  ID: jsonData.ID,
+                  encoded_audio: jsonData.encoded_audio,
+                  audioUrl: `data:audio/wav;base64,${jsonData.encoded_audio}`,
+                  segment: jsonData.segment || "F",
+                  transcription: jsonData.transcription || "", 
+                },
+              ]);
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+            }
+          } else if (file.name.endsWith(".wav")) {
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBlob = new Blob([arrayBuffer], { type: "audio/wav" });
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = () => {
+              const base64 = reader.result.split(",")[1];
+              const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+
+              setAudioFiles((prevFiles) => [
+                ...prevFiles,
+                {
+                  ID: fileNameWithoutExtension,
+                  encoded_audio: base64,
+                  audioUrl: audioUrl,
+                  segment: "F",
+                  transcription: "", 
+                },
+              ]);
+            };
+          } else {
+            alert("Please upload a valid .wav or .json file.");
+          }
+        };
+
+        fileReader.readAsText(file);
+      }
+    };
+
+    const downloadWavFile = (audioData) => {
+      const audioBlob = new Blob([new Uint8Array(atob(audioData.encoded_audio).split("").map(c => c.charCodeAt(0)))], { type: "audio/wav" });
+      const url = URL.createObjectURL(audioBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${audioData.ID}.wav`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+
+    const downloadJsonFile = (audioData) => {
+      const jsonData = JSON.stringify(audioData);
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${audioData.ID}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+
+    return (
+      <Accordion
+        title="Audio selection"
+        content={
+          <div className="audio-list">
+            <span className="description">
+            Allows users to record audio, select preloaded audio files, upload new files in .wav or .json format, and send them to a backend for later processing. It also allows users to download the files in .wav or .json format.
+            </span>
+
+            {(audioFiles.length && audioFiles.map((file, index) => (
+              <div key={file.ID} className="audio-row">
                 <span className="number">{index + 1}.</span>
                 <TextInput
                   value={file.ID}
@@ -262,28 +259,27 @@ const AudioSelection = ({ audioFiles, setAudioFiles, selectedAudio, setSelectedA
                   </svg>
                 </button>
               </div>
-            </>
-          ))) || <span className="noAudio">No audio Created</span>}
+            ))) || <span className="noAudio">No audio Created</span>}
 
-          <div className="separation"></div>
-          <div className="horizontal">
-            <button className={`recordingButton ${isRecording ? "recording" : ""}`} onClick={() => setIsRecording(!isRecording)}>
-              {isRecording ? "Stop Recording" : "Start Recording"}
-            </button>
-            <label className="uploadButton">
-              <span>Upload a json/wav file</span>
-              <input
-                type="file"
-                accept=".wav,.json"
-                onChange={handleFileUpload}
-                className="upload"
-              />
-            </label>
+            <div className="separation"></div>
+            <div className="horizontal">
+              <button className={`recordingButton ${isRecording ? "recording" : ""}`} onClick={() => setIsRecording(!isRecording)}>
+                {isRecording ? "Stop Recording" : "Start Recording"}
+              </button>
+              <label className="uploadButton">
+                <span>Upload a json/wav file</span>
+                <input
+                  type="file"
+                  accept=".wav,.json"
+                  onChange={handleFileUpload}
+                  className="upload"
+                />
+              </label>
+            </div>
           </div>
-        </div>
-      }
-    />
-  );
-};
+        }
+      />
+    );
+  };
 
-export default AudioSelection;
+  export default AudioSelection;

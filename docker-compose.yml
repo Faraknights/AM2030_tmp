@@ -16,16 +16,17 @@ services:
               count: all
               capabilities: [gpu]
     runtime: nvidia
-# react-ui:
-#   build:
-#     context: .
-#     dockerfile: ./react-ui/Dockerfile
-#   ports:
-#     - "3000:3000"
-#   volumes:
-#     - ./react-ui:/app
-#     - /app/node_modules
-#   environment:
-#     - NODE_ENV=development
-#   stdin_open: true
-#   tty: true
+
+  react-ui:
+    build:
+      context: .
+      dockerfile: ./react-ui/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react-ui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
