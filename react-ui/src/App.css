@@ -305,13 +305,35 @@ body {
   margin-bottom: 15px;
 }
 
-.result > div > span:first-of-type::before{
+.result > div > span:not(.error):first-of-type::before{
   content: "text: \"";
   font-weight: 600;
 }
-.result > div > span:first-of-type::after{
+.result > div > span:not(.error):first-of-type::after{
   content: "\"";
   font-weight: 600;
+}
+
+span.error{
+  color: white;
+  background-color: rgb(255, 87, 87);
+  display: flex;
+  width: fit-content;
+  padding: 3px 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+span.warning{
+  color: rgb(0, 0, 0);
+  background-color: rgb(245, 215, 84);
+  display: flex;
+  width: fit-content;
+  padding: 3px 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
 }
 
 .result > div > span:last-of-type{

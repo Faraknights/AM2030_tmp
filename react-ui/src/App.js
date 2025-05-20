@@ -5,7 +5,7 @@ import TaskSelector from './components/taskSelector';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState("emotion");
   const [loadingTask, setLoadingTask] = useState(null);
 
   const [audioFiles, setAudioFiles] = useState([]);
@@ -18,6 +18,7 @@ function App() {
           "Test_IDoNotBelieveYou.json",
           "Test_What.json",
           "Conversation.json",
+          "open_window.json",
         ];
 
         const fileDataPromises = fileList.map(async (fileName) => {

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Accordion from "../accordion";
+
+
 
 const EmotionRecognition = ({ selectedTask, loadingTask, audioFiles, selectedAudio }) => {
 	if (audioFiles && selectedAudio != null && audioFiles[selectedAudio]) {
@@ -9,6 +11,37 @@ const EmotionRecognition = ({ selectedTask, loadingTask, audioFiles, selectedAud
 	const [responseMessage, setResponseMessage] = useState([]);
 	const [status, setStatus] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const resultRef = useRef(null);
+
+	const taskLabels = {
+		emotion: {
+			title: "Emotion Recognition",
+			description: "recognize the user's emotion",
+			full: "This module will recognize the emotion in the audio sent through the module [Audio Selection]. It will first segment if asked, then transcribe the text before analyzing the emotion in the voice and the text, combining probabilities to get a final decision.",
+			button: "Recognize the emotion"
+		},
+		intention: {
+			title: "Intention Detection",
+			description: "detect the user's intention",
+			full: "This module will detect the user's intention in the audio sent through the module [Audio Selection]. It will first segment if needed, then transcribe the text before analyzing the utterance to extract the explicit action requested by the driver, in the form verb-topic (e.g., play-music, start-navigation).",
+			button: "Detect the intention"
+		}
+	};
+	
+	const currentLabels = taskLabels[selectedTask] || {
+		title: "Recognition",
+		description: "analyze the selected audio",
+		full: "This module will analyze the audio sent through the module [Audio Selection].",
+		button: "Run analysis"
+	};
+
+	useEffect(() => {
+		if (resultRef.current) {
+			resultRef.current.scrollTop = resultRef.current.scrollHeight;
+		}
+	}, [responseMessage]);
+	
 
 	const handleRunCommand = async () => {
 		setResponseMessage([]);
@@ -26,26 +59,25 @@ const EmotionRecognition = ({ selectedTask, loadingTask, audioFiles, selectedAud
 		  if (segment === "T") {
 			const sentences = transcription.split(/[.,!?]/).map(s => s.trim()).filter(Boolean);
 	  
-			const results = [];
 			for (const sentence of sentences) {
-				console.log(sentence, sentences)
-			  const response = await fetch("http://localhost:5000/asr/emotion", {
-				method: "POST",
-				headers: {
-				  "Content-Type": "application/json",
-				},
-				body: JSON.stringify({ transcription: sentence.trim(), task: selectedTask }),
-			  });
-	  
-			  const data = await response.json();
-			  results.push({
-				text: sentence.trim(),
-				output: data.result || data.error || "No result received",
-			  });
-			  setResponseMessage(results)
-	  
-			  setStatus(response.status);
-			}
+				const response = await fetch("http://localhost:5000/asr/emotion", {
+				  method: "POST",
+				  headers: {
+					"Content-Type": "application/json",
+				  },
+				  body: JSON.stringify({ transcription: sentence.trim(), task: selectedTask }),
+				});
+			  
+				const data = await response.json();
+				const newResult = {
+				  text: sentence.trim(),
+				  output: data.result || data.error || "No result received",
+				};
+			  
+				setResponseMessage(prev => [...prev, newResult]);
+			  
+				setStatus(response.status);
+			  }
 		  } else {
 			// Default behavior if no segmentation
 			const response = await fetch("http://localhost:5000/asr/emotion", {
@@ -70,31 +102,62 @@ const EmotionRecognition = ({ selectedTask, loadingTask, audioFiles, selectedAud
 		  setIsLoading(false);
 		}
 	  };
-	  
+
+	const noAudioSelected = selectedAudio == null;
+	const isTranscriptionEmpty = !noAudioSelected &&
+								 (!audioFiles ||
+									!audioFiles[selectedAudio] ||
+									!audioFiles[selectedAudio].transcription ||
+									audioFiles[selectedAudio].transcription.trim() === "");
+
 	return (
 		<Accordion
-			title={"Emotion Recognition"}
+			title={currentLabels.title}
 			content={
 				<div id="runCommand">
 					<span className="description">
-						<span>
-							This module will recognize the emotion in the audio sent through the module <strong>[Audio Selection]</strong>. It will first segment if asked, then transcribe the text before analyzing the emotion in the voice and the text, combining probabilities to get a final decision on the emotion.
-						</span>
+						<span>{currentLabels.full}</span>
 					</span>
-					<button 
-						className={`execute ${isLoading || isModelPreparing ? "disabled" : ""}`} 
-						onClick={handleRunCommand} 
-						disabled={isLoading || isModelPreparing}
+					{noAudioSelected && (<span className="warning">⚠ Warning: You must select an audio file.</span>)}
+					{isTranscriptionEmpty && (<span className="warning">⚠ Warning: The selected audio must have a full transcription to be sent to the model.</span>)}
+					<button
+						className={`execute ${
+							selectedTask == null ||
+							isLoading ||
+							isModelPreparing ||
+							noAudioSelected ||
+							isTranscriptionEmpty
+							? "disabled"
+							: ""
+						}`}
+						onClick={handleRunCommand}
+						disabled={
+							selectedTask == null ||
+							isLoading ||
+							isModelPreparing ||
+							noAudioSelected ||
+							isTranscriptionEmpty
+						}
 					>
-						{isLoading ? "Running..." : (isModelPreparing ? 'Preparing the model...' :"Recognize the emotion")}
+						{isLoading
+							? "Running..."
+							: isModelPreparing
+							? "Preparing the model..."
+							: currentLabels.button}
 					</button>
-					{responseMessage && (
+			
+					{responseMessage.length > 0 && (
 						<>
 							<span className="resultTitle">Status: {status}</span>
-							<div className={`result ${status === 200 ? "success" : "fail"}`}>
+							<div
+								ref={resultRef}
+								className={`result ${status === 200 ? "success" : "fail"}`}
+							>
 								{responseMessage.map((response, index) => (
 									<div key={index}>
-										<span>{response.text}</span>
+										<span className={response.text === "Error" ? "error" : ""}>
+											{response.text}
+										</span>
 										<span>{response.output}</span>
 									</div>
 								))}
@@ -105,6 +168,6 @@ const EmotionRecognition = ({ selectedTask, loadingTask, audioFiles, selectedAud
 			}
 		/>
 	);
-};
+}
 
 export default EmotionRecognition;

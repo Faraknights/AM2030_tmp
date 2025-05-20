@@ -1,6 +1,4 @@
-import json
 import os
-import re
 from datetime import datetime
 import warnings
 import gc
@@ -60,11 +58,7 @@ def format_conversation(user_text , task, domaine, input_dict_response=None):
 
     return task_prompt.replace("{USER_TEXT}", user_text)
 
-def extract_intention(response):
-    match = re.search(r"\b(\w+)\s*-\s*(\w+)\b", response)
-    return f"{match.group(1)}-{match.group(2)}" if match else None
-
-def extract_label_or_text(text, domaine, fr=True):
+def extract_label_or_text(text, domaine):
     if "generateResponse" in domaine:
         assistant_label = "<|im_start|> assistant"
         index = text.find(assistant_label)
@@ -72,10 +66,7 @@ def extract_label_or_text(text, domaine, fr=True):
         return text
     
     if domaine == "intention":
-        assistant_label = "the format verb-action_name is"
-        index = text.find(assistant_label)
-        text = text[index + len(assistant_label):]
-        return extract_intention(text)
+        return text
     
     labels_dic = {
         "emotion": {

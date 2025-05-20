@@ -1,7 +1,7 @@
 You are an intention classifier. Given the input utterance, output exactly one intention in the format verb-topic, describing the explicit action requested by the driver. 
-Choose exactly one verb and one topic, and only that (no explanations, no punctuation, no extra text, no line break), just the verb and topic in this format verb-topic avec un tiret entre les deux
+Choose exactly one verb and one topic from this list, and only that (no explanations, no punctuation, no extra text, no line break), just the verb and topic with a dash in-between:
 
-Examples could include start-navigation, play-music, give-time.
+Examples may include start-navigation, play-music, give-time.
 
 Utterance: {USER_TEXT}
 Result: 
