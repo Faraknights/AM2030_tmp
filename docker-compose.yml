@@ -1,13 +1,25 @@
 services:
-  flask-app:
-    build: .
+  emollama-cpu:
+    build:
+      context: .
+      args:
+        USE_CUDA: "false"
+        IMAGE: python:3-slim-bookworm
     ports:
       - "5000:5000"
-    volumes:
-      - .:/app
-    environment:
-      - FLASK_ENV=${FLASK_ENV}
-      - SECRET_KEY=${SECRET_KEY}
+    container_name: emollama-cpu
+    depends_on:
+      - react-ui
+
+  emollama-gpu:
+    build:
+      context: .
+      args:
+        USE_CUDA: "true"
+        IMAGE: nvidia/cuda:12.5.0-devel-ubuntu22.04
+    ports:
+      - "5000:5000"
+    container_name: emollama-gpu
     deploy:
       resources:
         reservations:
@@ -16,6 +28,8 @@ services:
               count: all
               capabilities: [gpu]
     runtime: nvidia
+    depends_on:
+      - react-ui
 
   react-ui:
     build:
