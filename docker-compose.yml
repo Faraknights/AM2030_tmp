@@ -4,7 +4,7 @@ services:
       context: .
       args:
         USE_CUDA: "false"
-        IMAGE: python:3-slim-bookworm
+        IMAGE: ubuntu:22.04
     ports:
       - "5000:5000"
     container_name: emollama-cpu
