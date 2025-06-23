@@ -4,40 +4,96 @@ import base64
 import os
 import whisper
 import tempfile
+import requests
 
-from modules.demo_aniti import run_classification 
 
 emotion_bp = Blueprint('emotion', __name__)
+intention_category_bp = Blueprint('intention_category', __name__)
+intention_bp = Blueprint('intention', __name__)
 
 whisp = whisper.load_model("base")
 
-task_map = {
-    "emotion": "systemMELD",
-    "intention": "intention"
-}
-
+model_busy = False
 @emotion_bp.route('/emotion', methods=['POST'])
 def get_emotion():
+    global model_busy
+
+    if model_busy:
+        return jsonify({"error": "Model is currently busy"}), 503
+
     data = request.get_json()
     transcription = data.get("transcription")
-    task = data.get("task")
+    if transcription is None:
+        return jsonify({"error": "No transcription provided"}), 400
 
-    if task not in task_map:
-        return jsonify({"error": "Invalid task"}), 400
+    model_busy = True
+    try:
+        url = "http://localhost:11434/api/generate"
+        payload = {
+            "model": "emotion",
+            "prompt": f"\"{transcription}\"",
+            "stream": False
+        }
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return jsonify({"result": response.json()["response"]})
+    finally:
+        model_busy = False
 
-    result = run_classification(task, task_map[task], transcription)
-    return {"result": result}
 
-@emotion_bp.route('/cacheModel', methods=['POST'])
-def get_cacheModel():
+@intention_category_bp.route('/intention_category', methods=['POST'])
+def get_intention_category():
+    global model_busy
+
+    if model_busy:
+        return jsonify({"error": "Model is currently busy"}), 503
+
     data = request.get_json()
-    task = data.get("task")
+    transcription = data.get("transcription")
+    if transcription is None:
+        return jsonify({"error": "No transcription provided"}), 400
 
-    if task not in task_map:
-        return jsonify({"error": "Invalid task"}), 400
+    model_busy = True
+    try:
+        url = "http://localhost:11434/api/generate"
+        payload = {
+            "model": "category",
+            "prompt": f"\"{transcription}\"",
+            "stream": False
+        }
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return jsonify({"result": response.json()["response"]})
+    finally:
+        model_busy = False
 
-    run_classification(task, task_map[task], "t") #t for test
-    return jsonify({"status": "ok"})
+@intention_bp.route('/intention', methods=['POST'])
+def get_intention():
+    global model_busy
+
+    if model_busy:
+        return jsonify({"error": "Model is currently busy"}), 503
+
+    data = request.get_json()
+    category_code = data.get("category_code")
+    transcription = data.get("transcription")
+    if category_code is None:
+        return jsonify({"error": "No category_code provided"}), 400
+
+    model_busy = True
+    try:
+        url = "http://localhost:11434/api/generate"
+        payload = {
+            "model": category_code,
+            "prompt": f"\"{transcription}\"",
+            "stream": False
+        }
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return jsonify({"result": response.json()["response"]})
+    finally:
+        model_busy = False
+
 
 @emotion_bp.route('/transcribe', methods=['POST'])
 def transcribe_audio():

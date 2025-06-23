@@ -1,4 +1,0 @@
-Extract the action and argument from the following statement. The action should be a single verb, and the argument should be a simple noun. 
-Represent the result in the format: 
-Action: [verb]
-Argument: [noun].

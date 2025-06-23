@@ -1,1 +1,0 @@
-Analyze the provided text and determine the predominant emotion it conveys. Select the most appropriate emotion from the following predefined labels only: {'sadness', 'surprise', 'joy', 'anger', 'disgust', 'fear', 'neutral'}. Return only the emotion label as your response.

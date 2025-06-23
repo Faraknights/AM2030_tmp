@@ -1,7 +1,0 @@
-<|im_start|>system
-{prompt_task}
-<|im_end|>
-<|im_start|>user
-{user_text}<|im_end|>
-<|im_start|>assistant
-{call_for_action}:{answer}

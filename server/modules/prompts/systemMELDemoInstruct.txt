@@ -1,1 +1,0 @@
-Task: Categorize the text's emotional tone as either 'neutral' or identify the presence of one of the given emotions {'sadness', 'surprise', 'joy', 'anger', 'disgust', 'fear'}.

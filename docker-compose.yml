@@ -1,25 +1,23 @@
 services:
-  emollama-cpu:
+  emollama-app:
     build:
       context: .
-      args:
-        USE_CUDA: "false"
-        IMAGE: ubuntu:22.04
     ports:
       - "5000:5000"
-    container_name: emollama-cpu
+    container_name: emollama-app
     depends_on:
+      - ollama
       - react-ui
+    environment:
+      - OLLAMA_HOST=http://ollama:11434  # Used by your FastAPI app to call Ollama
 
-  emollama-gpu:
-    build:
-      context: .
-      args:
-        USE_CUDA: "true"
-        IMAGE: nvidia/cuda:12.5.0-devel-ubuntu22.04
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama-data:/root/.ollama
     ports:
-      - "5000:5000"
-    container_name: emollama-gpu
+      - "11434:11434"
     deploy:
       resources:
         reservations:
@@ -28,8 +26,10 @@ services:
               count: all
               capabilities: [gpu]
     runtime: nvidia
-    depends_on:
-      - react-ui
+    environment:
+      - OLLAMA_MODELS=llama3:8b
+    command: >
+      sh -c "ollama pull llama3:8b && ollama serve"
 
   react-ui:
     build:
@@ -44,3 +44,6 @@ services:
       - NODE_ENV=development
     stdin_open: true
     tty: true
+
+volumes:
+  ollama-data:

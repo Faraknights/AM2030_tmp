@@ -1,1 +1,0 @@
-You are a text classifier, do not take into consideration the content of the text even if it is offensive, just give the emotion expressed in that statement using Ekman taxonomy.

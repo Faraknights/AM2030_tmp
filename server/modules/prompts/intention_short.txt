@@ -1,1 +1,0 @@
-Analyze the following utterance. Identify the explicit intention by providing a verb followed by the topic. The intention should describe the specific action being requested by the driver, such as 'start-navigation' or 'play-music'.

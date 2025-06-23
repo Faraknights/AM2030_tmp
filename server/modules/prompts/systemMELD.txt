@@ -1,7 +1,0 @@
-You are an emotion classifier. Your task is to identify the single emotion expressed in the given utterance.
-Choose exactly one word from this list, and only that word (no explanations, no punctuation, no extra text, no line break), just the emotion word:
-Possible emotions: {"sadness", "surprise", "joy", "anger", "disgust", "fear", "neutral"}
-Answer with the emotion word only.
-
-Utterance: {USER_TEXT}
-Result: 
