@@ -1,5 +1,5 @@
 import os
-import wexpect
+import pexpect
 import time
 
 def process_txt_prompts_and_save_single_file(input_folder):
@@ -13,7 +13,7 @@ def process_txt_prompts_and_save_single_file(input_folder):
             
             flat_prompt = prompt_text.replace('\n', '\\n')
 
-            child = wexpect.spawn('ollama run llama3:8b')
+            child = pexpect.spawn('ollama run llama3:8b', encoding='utf-8')
             child.expect('>')
 
             child.sendline(flat_prompt)

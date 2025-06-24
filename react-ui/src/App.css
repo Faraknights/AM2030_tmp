@@ -640,3 +640,23 @@ span.warning{
 .task:not(:last-of-type){
   margin-right: 40px;
 }
+
+.chain-of-thought {
+  color: #666666;       /* medium gray */
+  font-style: italic;
+  white-space: pre-wrap;
+  margin-top: 0.25rem;
+}
+
+.code {
+  display: inline-block;
+  background: linear-gradient(0deg, rgb(25, 138, 195) 0%, rgb(34, 191, 222) 100%);
+  color: white;
+  padding: 0.25em 1em;
+  border-radius: 9999px;    /* full pill shape */
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  user-select: none;
+  width: min-content;
+}

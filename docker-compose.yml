@@ -1,40 +1,35 @@
-services:
-  emollama-app:
-    build:
-      context: .
-    ports:
-      - "5000:5000"
-    container_name: emollama-app
-    depends_on:
-      - ollama
-      - react-ui
-    environment:
-      - OLLAMA_HOST=http://ollama:11434  # Used by your FastAPI app to call Ollama
+version: "3.8"
 
+services:
   ollama:
     image: ollama/ollama
     container_name: ollama
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - ollama-data:/root/.ollama
     ports:
       - "11434:11434"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    runtime: nvidia
+
+  app:
+    build:
+      context: .
+    container_name: emollama-app
+    depends_on:
+      - ollama
+      - react-ui
+    ports:
+      - "5000:5000"
     environment:
-      - OLLAMA_MODELS=llama3:8b
-    command: >
-      sh -c "ollama pull llama3:8b && ollama serve"
+      - OLLAMA_HOST=http://ollama:11434
 
   react-ui:
     build:
       context: .
       dockerfile: ./react-ui/Dockerfile
+    container_name: react-ui
     ports:
       - "3000:3000"
     volumes:

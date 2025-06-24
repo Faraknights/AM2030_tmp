@@ -1,18 +1,54 @@
 import React, { useEffect, useRef, useState } from "react";
 import Accordion from "../accordion";
 
+const labels = {
+  title: "Emotion and Intention Recognition",
+  full:
+    "This module will recognize both the emotion and the intention in the audio sent through the module [Audio Selection]. It will first segment if needed, then transcribe the text before analyzing the voice and the text to determine the user's emotional state and explicit intentions.",
+  button: "Analyze audio",
+};
+
+// Unified API call function
+const callASRApi = async (endpoint, bodyObj) => {
+  const response = await fetch(`http://localhost:5000/asr/${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(bodyObj),
+  });
+  const data = await response.json();
+  return {
+    status: response.status,
+    result: data.result || data.error || "No result received",
+  };
+};
+
+// Unified response processor
+export const processResponse = (rawResult) => {
+  const lines = rawResult.trim().split("\n");
+  const lastLine = lines.pop();
+
+  let code = [];
+
+  try {
+    code = JSON.parse(lastLine);
+  } catch {
+    code = lastLine
+      .replace(/[\[\]"']/g, "")
+      .split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+  }
+
+  const chainOfThought = lines.join("\n").trim();
+
+  return { chainOfThought, code };
+};
+
 const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
   const [responseMessage, setResponseMessage] = useState([]);
   const [status, setStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const resultRef = useRef(null);
-
-  const labels = {
-    title: "Emotion and Intention Recognition",
-    full:
-      "This module will recognize both the emotion and the intention in the audio sent through the module [Audio Selection]. It will first segment if needed, then transcribe the text before analyzing the voice and the text to determine the user's emotional state and explicit intentions.",
-    button: "Analyze audio",
-  };
 
   useEffect(() => {
     if (resultRef.current) {
@@ -27,59 +63,67 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
     audioFiles[selectedAudio].transcription &&
     audioFiles[selectedAudio].transcription.trim() !== "";
 
-  const processResponse = (rawResult) => {
-    const lines = rawResult.trim().split("\n");
-    const lastLine = lines.pop();
+  const processSentence = async (sentence) => {
+    // Start with an empty entry for this sentence
+    setResponseMessage((prev) => [
+      ...prev,
+      {
+        text: sentence,
+        emotionCoT: "",
+        intentionCoT: "",
+        fineIntentionCoT: "",
+        categoryCode: "",
+        emotions: [],
+        intention: "",
+        status: null,
+      },
+    ]);
 
-    let emotions = [];
+    // 1. Emotion API call
+    const { status: emotionStatus, result: emotionRaw } = await callASRApi("emotion", { transcription: sentence });
+    const { chainOfThought: emotionCoT, code: emotions } = processResponse(emotionRaw);
 
-    try {
-      emotions = JSON.parse(lastLine);
-    } catch {
-      emotions = lastLine
-        .replace(/[\[\]"']/g, "")
-        .split(",")
-        .map((e) => e.trim())
-        .filter(Boolean);
-    }
+    setResponseMessage((prev) =>
+      prev.map((item) =>
+        item.text === sentence
+          ? { ...item, emotionCoT, emotions, status: emotionStatus }
+          : item
+      )
+    );
 
-    const chainOfThought = lines.join("\n").trim();
+    // 2. Intention Category API call
+    const { status: intentionStatus, result: intentionRaw } = await callASRApi("intention_category", { transcription: sentence });
+    const { chainOfThought: intentionCoT, code: intentionCodes } = processResponse(intentionRaw);
+    const categoryCode = intentionCodes.length > 0 ? intentionCodes[0] : "";
 
-    return { chainOfThought, emotions };
-  };
+    setResponseMessage((prev) =>
+      prev.map((item) =>
+        item.text === sentence
+          ? { ...item, intentionCoT, categoryCode }
+          : item
+      )
+    );
 
-  const callEmotionAPI = async (text) => {
-    const response = await fetch("http://localhost:5000/asr/emotion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcription: text }),
+    // 3. Fine Intention API call
+    const { status: fineStatus, result: fineIntentionRaw } = await callASRApi("intention", {
+      category_code: categoryCode,
+      transcription: sentence,
     });
-    const data = await response.json();
-    return { status: response.status, result: data.result || data.error || "No result received" };
+    const { chainOfThought: fineIntentionCoT, code: fineIntentionCodes } = processResponse(fineIntentionRaw);
+    const intention = fineIntentionCodes.length > 0 ? fineIntentionCodes[0] : "";
+
+    setResponseMessage((prev) =>
+      prev.map((item) =>
+        item.text === sentence
+          ? { ...item, fineIntentionCoT, intention }
+          : item
+      )
+    );
+
+    // Update status with last call's status (optional)
+    setStatus(fineStatus);
   };
 
-  const callIntentionAPI = async (text) => {
-    const response = await fetch("http://localhost:5000/asr/intention_category", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcription: text }),
-    });
-    const data = await response.json();
-    return { status: response.status, result: data.result || data.error || "No result received" };
-  };
-
-  const callFineIntentionAPI = async (code, text) => {
-    const response = await fetch("http://localhost:5000/asr/intention", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category_code: code, transcription: text }),
-    });
-    const data = await response.json();
-    return {
-      status: response.status,
-      result: data.result || data.error || "No result received",
-    };
-  };
 
   const handleRunCommand = async () => {
     setResponseMessage([]);
@@ -96,24 +140,6 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
     try {
       const { transcription, segment } = audioFiles[selectedAudio];
 
-      const processSentence = async (sentence) => {
-        const { status: emotionStatus, result: emotionRaw } = await callEmotionAPI(sentence);
-        const { chainOfThought, emotions } = processResponse(emotionRaw);
-
-        const { status: intentionStatus, result: intentionRaw } = await callIntentionAPI(sentence);
-        const intentionLines = intentionRaw.trim().split("\n");
-        const code = intentionLines[intentionLines.length - 1].replace("*", "").replace("[", "").replace("]", "").trim();
-
-        const { status: fineStatus, result: fineIntention } = await callFineIntentionAPI(code, sentence);
-        const intention = fineIntention;
-
-        setResponseMessage((prev) => [
-          ...prev,
-          { text: sentence, chainOfThought, emotions, intention, status: emotionStatus },
-        ]);
-        setStatus(emotionStatus);
-      };
-
       if (segment === "T") {
         const sentences = transcription
           .split(/[.,!?]/)
@@ -122,6 +148,7 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
 
         for (const sentence of sentences) {
           await processSentence(sentence);
+          // Small delay for UX smoothness
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
       } else {
@@ -164,25 +191,43 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
             <>
               <span className="resultTitle">Status: {status}</span>
               <div ref={resultRef} className={`result ${status === 200 ? "success" : "fail"}`}>
-                {responseMessage.map(({ text, chainOfThought, emotions, intention }, index) => (
-                  <div key={index} style={{ marginBottom: "1rem" }}>
-                    <strong>Input:</strong> <span>{text}</span>
+                {responseMessage.map(({ text, emotionCoT, intentionCoT, fineIntentionCoT, categoryCode, emotions, intention }, index) => (
+                  <div key={index} className="result-item" style={{ marginBottom: "1rem" }}>
+                    <strong>Input:</strong> <span className="input-text">{text}</span>
 
-                    {chainOfThought && (
-                      <div style={{ whiteSpace: "pre-wrap", marginTop: "0.25rem", fontStyle: "italic" }}>
-                        {chainOfThought}
+                    {emotionCoT && (
+                      <div className="chain-of-thought emotion-cot">
+                        {emotionCoT}
                       </div>
                     )}
 
                     {emotions && emotions.length > 0 && (
-                      <div style={{ marginTop: "0.5rem" }}>
-                        <strong>Detected Emotions:</strong> {emotions.join(", ")}
+                      <div className="code">
+                        {emotions.join(", ")}
+                      </div>
+                    )}
+
+                    {intentionCoT && (
+                      <div className="chain-of-thought intention-category-cot">
+                        {intentionCoT}
+                      </div>
+                    )}
+
+                    {categoryCode && (
+                      <div className="code">
+                        {Array.isArray(categoryCode) ? categoryCode.join(", ") : categoryCode}
+                      </div>
+                    )}
+
+                    {fineIntentionCoT && (
+                      <div className="chain-of-thought fine-intention-cot">
+                        {fineIntentionCoT}
                       </div>
                     )}
 
                     {intention && (
-                      <div style={{ marginTop: "0.5rem" }}>
-                        <strong>Detected Intention:</strong> {intention}
+                      <div className="code">
+                        {intention}
                       </div>
                     )}
                   </div>

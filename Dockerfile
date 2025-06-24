@@ -1,26 +1,38 @@
-# Base image
 FROM python:3.11-slim
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential git ffmpeg curl && \
-    apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    ffmpeg \
+    libsndfile1 \
+    build-essential \
+    curl \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
-WORKDIR /app
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
-# Copy only requirements first to leverage caching
-COPY requirements.txt .
+# Copy requirements to image
+COPY requirements.txt /tmp/requirements.txt
 
 # Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Copy the rest of the code
-COPY . .
+# Install whisper from GitHub directly
+RUN pip install --no-cache-dir git+https://github.com/openai/whisper.git
 
-# Expose port
-EXPOSE 5000
+# Install pexpect
+RUN pip install --no-cache-dir pexpect
 
-# Start the app
-CMD ["python3", "server/app.py"]
+# Copy project files
+COPY . /app
+WORKDIR /app
+
+# Optional: wait for Ollama to be ready (avoids timing issues)
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
