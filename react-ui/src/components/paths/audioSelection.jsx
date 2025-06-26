@@ -10,37 +10,44 @@
     const audioChunksRef = useRef([]);
 
     const startRecording = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
-    
+        audioChunksRef.current = [];
+
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
             audioChunksRef.current.push(event.data);
+            console.log("Chunk received:", event.data.size);
           }
         };
-    
+
         mediaRecorderRef.current.onstop = () => {
+          console.log("Recorder stopped. Chunks count:", audioChunksRef.current.length);
+          if (!audioChunksRef.current.length) {
+            console.warn("No audio chunks available on stop");
+            return;
+          }
+
           const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-          audioChunksRef.current = [];
           const audioUrl = URL.createObjectURL(audioBlob);
-    
+          audioChunksRef.current = [];
+
           const reader = new FileReader();
           reader.readAsDataURL(audioBlob);
-    
+
           reader.onloadend = async () => {
             const base64 = reader.result.split(",")[1];
+            console.log("Base64 audio generated", base64.length);
+
             let transcription = "";
-    
+
             try {
               const response = await fetch("http://localhost:5000/asr/transcribe", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ encoded_audio: base64 }),
               });
-    
               const result = await response.json();
               transcription = result.transcription || "";
             } catch (error) {
@@ -51,20 +58,28 @@
                 {
                   ID: `audioFile_${Date.now()}`,
                   encoded_audio: base64,
-                  audioUrl: audioUrl,
+                  audioUrl,
                   segment: "F",
-                  transcription: transcription,
+                  transcription,
                 },
               ]);
             }
           };
         };
-    
+
         mediaRecorderRef.current.start();
+        console.log("Recording started");
+
+        // Stop recording after 5 seconds (adjust as needed)
+        setTimeout(() => {
+          mediaRecorderRef.current.stop();
+        }, 5000);
+
       } catch (error) {
         console.error("Error accessing microphone:", error);
       }
     };
+
     
     const stopRecording = () => {
       if (mediaRecorderRef.current) {

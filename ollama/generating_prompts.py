@@ -14,7 +14,8 @@ def process_txt_prompts_and_save_single_file(input_folder):
             flat_prompt = prompt_text.replace('\n', '\\n')
 
             child = pexpect.spawn('ollama run llama3:8b', encoding='utf-8')
-            child.expect('>')
+
+            child.expect('>', timeout=None)
 
             child.sendline(flat_prompt)
             child.expect('>')
@@ -24,8 +25,8 @@ def process_txt_prompts_and_save_single_file(input_folder):
             child.sendline(tmp)
             child.expect('>')
 
-            child.sendline('\x04') 
-            child.expect(wexpect.EOF)
+            child.sendline('/bye') 
+            child.expect(pexpect.EOF)
 
 # setup chemin
 base_dir = os.path.dirname(os.path.abspath(__file__))

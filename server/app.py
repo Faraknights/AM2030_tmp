@@ -5,7 +5,7 @@ import os
 import json
 import torch
 
-CONFIG_PATH = 'server/config.json'
+CONFIG_PATH = 'config.json'
 if not os.path.exists(CONFIG_PATH):
     raise FileNotFoundError(f"Config file not found: {CONFIG_PATH}")
 

@@ -1,7 +1,7 @@
 import requests
 
 def query_model_ollama(model_name: str, prompt: str) -> str:
-    url = "http://localhost:11434/api/generate"
+    url = "http://ollama:11434/api/generate"
     payload = {Z
         "model": model_name,
         "prompt": prompt,

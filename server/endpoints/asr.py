@@ -5,15 +5,33 @@ import os
 import whisper
 import tempfile
 import requests
-
+import torch
+import time
 
 emotion_bp = Blueprint('emotion', __name__)
 intention_category_bp = Blueprint('intention_category', __name__)
 intention_bp = Blueprint('intention', __name__)
 
-whisp = whisper.load_model("base")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+whisp = whisper.load_model("turbo", device=device)
 
 model_busy = False
+
+
+def post_with_retries(url, payload, retries=3, delay=0.05):
+    """Send POST request with retries."""
+    for attempt in range(retries):
+        try:
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                raise RuntimeError("Error connecting with Ollama") from e
+
+
 @emotion_bp.route('/emotion', methods=['POST'])
 def get_emotion():
     global model_busy
@@ -28,15 +46,19 @@ def get_emotion():
 
     model_busy = True
     try:
-        url = "http://localhost:11434/api/generate"
+        url = "http://ollama:11434/api/generate"
         payload = {
             "model": "emotion",
             "prompt": f"\"{transcription}\"",
             "stream": False
         }
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        return jsonify({"result": response.json()["response"]})
+        try:
+            result = post_with_retries(url, payload)
+        except RuntimeError:
+            return jsonify({"error": "Error connecting with Ollama"}), 502
+
+        return jsonify({"result": result["response"]})
+
     finally:
         model_busy = False
 
@@ -55,17 +77,21 @@ def get_intention_category():
 
     model_busy = True
     try:
-        url = "http://localhost:11434/api/generate"
+        url = "http://ollama:11434/api/generate"
         payload = {
             "model": "category",
             "prompt": f"\"{transcription}\"",
             "stream": False
         }
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        return jsonify({"result": response.json()["response"]})
+        try:
+            result = post_with_retries(url, payload)
+        except RuntimeError:
+            return jsonify({"error": "Error connecting with Ollama"}), 502
+
+        return jsonify({"result": result["response"]})
     finally:
         model_busy = False
+
 
 @intention_bp.route('/intention', methods=['POST'])
 def get_intention():
@@ -82,15 +108,18 @@ def get_intention():
 
     model_busy = True
     try:
-        url = "http://localhost:11434/api/generate"
+        url = "http://ollama:11434/api/generate"
         payload = {
             "model": category_code,
             "prompt": f"\"{transcription}\"",
             "stream": False
         }
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        return jsonify({"result": response.json()["response"]})
+        try:
+            result = post_with_retries(url, payload)
+        except RuntimeError:
+            return jsonify({"error": "Error connecting with Ollama"}), 502
+
+        return jsonify({"result": result["response"]})
     finally:
         model_busy = False
 
@@ -119,7 +148,7 @@ def transcribe_audio():
             "-ar", "16000", "-ac", "1", "-f", "wav", resampled_path
         ], check=True)
 
-        result = whisp.transcribe(resampled_path, language='fr')
+        result = whisp.transcribe(resampled_path, patience=2, beam_size=5)
         transcription = result.get("text", "").strip()
 
         return jsonify({"transcription": transcription}), 200
