@@ -13,20 +13,20 @@ def process_txt_prompts_and_save_single_file(input_folder):
             
             flat_prompt = prompt_text.replace('\n', '\\n')
 
-            child = pexpect.spawn('ollama run llama3:8b', encoding='utf-8')
+            child = pexpect.spawn('ollama run llama3:8b', encoding='utf-8', timeout=None)
 
             child.expect('>', timeout=None)
 
             child.sendline(flat_prompt)
-            child.expect('>')
+            child.expect('>', timeout=None)
 
             tmp = f'/save {filename[:-4]}'
             print(tmp)
             child.sendline(tmp)
-            child.expect('>')
+            child.expect('>', timeout=None)
 
             child.sendline('/bye') 
-            child.expect(pexpect.EOF)
+            child.expect(pexpect.EOF, timeout=None)
 
 # setup chemin
 base_dir = os.path.dirname(os.path.abspath(__file__))
