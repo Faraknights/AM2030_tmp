@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "[entrypoint] Starting Ollama server in background..."
+
 ollama serve &
 
 echo "[entrypoint] Waiting for Ollama to be ready..."

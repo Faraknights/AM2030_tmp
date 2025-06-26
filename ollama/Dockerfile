@@ -15,8 +15,7 @@ WORKDIR /app
 COPY . .
 
 # Add custom entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # Use custom entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["bash", "entrypoint.sh"]
