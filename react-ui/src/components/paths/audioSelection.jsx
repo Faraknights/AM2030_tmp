@@ -162,9 +162,23 @@
 
             const reader = new FileReader();
             reader.readAsDataURL(audioBlob);
-            reader.onloadend = () => {
+
+            reader.onloadend = async () => {
               const base64 = reader.result.split(",")[1];
               const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+
+              let transcription = "";
+              try {
+                const response = await fetch("http://localhost:5000/asr/transcribe", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ encoded_audio: base64 }),
+                });
+                const result = await response.json();
+                transcription = result.transcription || "";
+              } catch (error) {
+                console.error("Transcription failed for .wav upload:", error);
+              }
 
               setAudioFiles((prevFiles) => [
                 ...prevFiles,
@@ -173,11 +187,12 @@
                   encoded_audio: base64,
                   audioUrl: audioUrl,
                   segment: "F",
-                  transcription: "", 
+                  transcription,
                 },
               ]);
             };
-          } else {
+          }
+          else {
             alert("Please upload a valid .wav or .json file.");
           }
         };

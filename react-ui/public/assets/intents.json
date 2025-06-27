@@ -1,0 +1,1897 @@
+[
+    {
+        "intent": "CancelDiscoveryDrive",
+        "language": "en",
+        "description": "The user requests to end or discontinue an ongoing Discovery Drive or guided tour. This stops any active scenic driving experience.",
+        "trigger": "User",
+        "templates": [
+            "please cancel the tour",
+            "cancel my tour",
+            "stop my trip"
+        ],
+        "examples": [
+            "Hey, can you stop this drive ?",
+            "I'm done with this guided tour. Cancel it now.",
+            "Please end this experience and just let me drive without assistance.",
+            "Can you end the trip ?"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 8
+            },
+            {
+                "code": "NAV",
+                "count": 1
+            },
+            {
+                "code": "SYS",
+                "count": 1
+            },
+            {
+                "code": "INT",
+                "count": 1
+            }
+        ]
+    },
+    {
+        "intent": "ACState",
+        "language": "en",
+        "description": "The user asks the assistant to turn the air conditioning system on or off. This is a binary command related to cabin temperature control.",
+        "trigger": "User",
+        "templates": [
+            "turn the ac {stateonoff}",
+            "turn {stateonoff} the ac"
+        ],
+        "examples": [
+            "Turn on the air conditioning",
+            "Can you turn the AC off?",
+            "I want to cool down the car",
+            "Make sure the air conditioner is turned on",
+            "Hey, can I get some a/c in here?"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Ask_DiscoveryDrive",
+        "language": "en",
+        "description": "The user requests the assistant to create route for a future Discovery Drive based on informations given by the user in its utterance like loation, destination, duration, distance, or points of interest. this intent does not start the Discovery Drive just prepare it.",
+        "trigger": "User",
+        "templates": [
+            "give me best places around {currentposition}",
+            "give me a tour from {currentposition} to {destination}",
+            "find me best places to {destination}",
+            "suggest a journey from {currentposition} to {destination}",
+            "what's the best route from {currentposition} to {destination} for tourists ?",
+            "what are the must see spots in {currentposition} for {distance} kilometers?",
+            "recommend top tourist attractions in {currentposition}",
+            "i want to know the highlights of {currentposition} ",
+            "list popular places in {currentposition} ",
+            "can you help me explore my city?",
+            "give me tourist places around {currentposition} within {distance}  km",
+            "i need a guide for sightseeing.",
+            "take me to {destination} with a guided tour",
+            "provide me a discovery drive",
+            "recommend me a discovery drive",
+            "propose me a nice tour",
+            "propose a guided tour from {currentposition} to {destination}",
+            "propose me a tour to {destination}",
+            "what are the must see spots in {currentposition} for {duration} hours?",
+            "propose me a tour to {destination} for {duration} hours",
+            "Give me best places around {currentposition} for {duration} hours",
+            "give me a tour from {currentposition} to {destination} for {duration}  hours",
+            "give me a {distance} km rounded tour of {currentposition}",
+            "give me best places around {currentposition} for {duration} hours within {distance} km",
+            "give me tourist places around {currentposition} within {distance}  km for {duration} hours"
+        ],
+        "examples": [
+            "Can you suggest some scenic routes and interesting stops along the way?",
+            "Take me on a guided driving experience that shows me some hidden gems in the area.",
+            "I'd like you to suggest a route with interesting points of interest and stop at some cool places we pass by",
+            "Suggest a drive from Marseille to Avignon"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 8
+            },
+            {
+                "code": "POI",
+                "count": 2
+            }
+        ]
+    },
+    {
+        "intent": "CB_payment",
+        "language": "en",
+        "description": "The user explicitly asks to start a payment for a specific product, service, or bill. The assistant should trigger a payment interface or system. This is about just initiating a transaction, **not** just confirming or authorizing one.",
+        "trigger": "User",
+        "templates": [
+            "pay at {payment}",
+            "i want to make a payment for {payment}",
+            "i'd like to make a purchase for {payment}",
+            "make a payment at {payment}",
+            "i want to pay with a credit card at {payment}",
+            "i want to pay a bill for {payment},'complete a payment at {payment}"
+        ],
+        "examples": [
+            "pay my electricity bill at the gas station",
+            "can you take care of this parking ticket payment here?",
+            "make a payment for my cell phone bill at the convenience store",
+            "can I just pay this toll now?",
+            "take me through the process to pay this credit card bill at the bank"
+        ],
+        "categories": [
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "ColorCode",
+        "language": "en",
+        "description": "The user requests to change the ambient lighting color inside the vehicle. The assistant is expected to set a specific color based on a given code or color name.",
+        "trigger": "User",
+        "templates": [
+            "color code {ambiance}"
+        ],
+        "examples": [
+            "Set my ambiance to blue",
+            "Can you make it a warm yellow?",
+            "Change the light color to red",
+            "Ambient mode: green please",
+            "Make the lights orange, like a sunset"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "DefaultDuration_DiscoveryDrive",
+        "language": "en",
+        "description": "Set a default duration for the user's discovery drive tour.",
+        "trigger": "User",
+        "templates": [
+            "{user_input_yes}",
+            "{user_input_no}",
+            "proa_default_duration_tour {currentposition} {duration} {default_tour_req}"
+        ],
+        "examples": [
+            "Set my default tour length for Discovery Drive, please.",
+            "Can you make Discovery Drive the default duration from now on?",
+            "What's the default time I'll have for a Discovery Drive? I want to change it.",
+            "I'd like to set the default discovery drive tour to last {X} minutes/hours.",
+            "Make Discovery Drive my standard tour length, can you do that?"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "DiscoveryDrive_FromNavRequest",
+        "language": "en",
+        "description": "The user requests to transform their current navigation into a Discovery Drive experience, which includes scenic routes and points of interest along the way.",
+        "trigger": "User",
+        "templates": [
+            "proa_request_guided_tour {destination} {default_request}",
+            "{input_yes}",
+            "{input_no}"
+        ],
+        "examples": [
+            "Can you turn this navigation into a Discovery Drive?",
+            "Let's turn my current route into a Discovery Drive experience.",
+            "Transform my navigation into a guided tour, please.",
+            "Make this navigation more interesting with a Discovery Drive mode."
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+                "code": "POI",
+                "count": 10
+            },
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "EMS_ExtendedModeSelected",
+        "language": "en",
+        "description": "The user selects a predefined vehicle mode or driving profile created by the user, which adjusts multiple car settings (e.g., lighting, AC, seat position) to match stored preferences.",
+        "trigger": "User",
+        "templates": [
+            "i would like to change the vehicle parameters with those from my {modeselect} profile",
+            "please, set the {modeselect} profile",
+            "please, set the {modeselect} profile for my car"
+        ],
+        "examples": [
+            "switch me into my daily commute profile setting",
+            "can you use the settings from my morning routine profile?",
+            "i'd like to change the car settings to those of my long road trip profile",
+            "set my car up like it was when i drove to work this morning",
+            "go ahead and put everything in my weekend warrior settings"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "ERR_POINoResult",
+        "language": "en",
+        "description": "Signals that the user is querying for point-of-interest (POI) information but no relevant result was found, prompting the AI car assistant to suggest alternative options or apologize for the lack of results.",
+        "trigger": "Model",
+        "templates": [
+            "err_poi_no_result"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "ETP_EvDealerAppointment",
+        "language": "en",
+        "description": "The user requests the assistant to find or book an appointment with their car dealer or service center. This intent is focused on scheduling a service or maintenance appointment. This intent does **not** make appointment for restaurants and hotels.",
+        "trigger": "User",
+        "templates": [
+            "looking for an appointment",
+            "make an appointment",
+            "i prefer you search an appointment for me",
+            "let's go for an appointment",
+            "find me an appointment with my dealer",
+            "find a date compatible with my calendar",
+            "find a date matching with my calendar",
+            "find a date suitable with my calendar",
+            "an appointment",
+            "arrange a meeting with the dealer"
+        ],
+        "examples": [
+            "Can you book an appointment with my car dealer?",
+            "I need to schedule a service appointment at the dealership.",
+            "Please find a time slot for my car's maintenance at the dealer.",
+            "Can you arrange a meeting with my preferred mechanic?",
+            "I want to set up an appointment for a test drive at the dealership."
+        ],
+        "categories": [
+            {
+                "code": "MTN",
+                "count": 10
+            },
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "ETP_EvDealerCall",
+        "language": "en",
+        "description": "The user requests the assistant to place a phone call to their dealership or a specific person at the dealership. This does **not** include booking or messaging commercial services.",
+        "trigger": "User",
+        "templates": [
+            "place a call",
+            "make a call",
+            "i want to call him no",
+            "i want to call my dealership",
+            "call the dealership",
+            "call him"
+        ],
+        "examples": [
+            "can you set up a call for me to the Toyota dealership",
+            "Hey, can I get an call with Bob Smith Motors",
+            "i want to call my dealership",
+            "Can you call me my preferred mechanic please"
+        ],
+        "categories": [
+            {
+                "code": "MTN",
+                "count": 10
+            },{
+                "code": "PHN",
+                "count": 10
+            },{
+                "code": "COM",
+                "count": 10
+            },{
+                "code": "Sys",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "GEN_AssistantOverview",
+        "language": "en",
+        "description": "The user asks about the car assistant's boundaries and capabilities: what questions it can answer and what it can control on the user's behalf.",
+        "trigger": "User",
+        "templates": [
+            "what can i do ?",
+            "what can you do ?",
+            "what are you able to do ?",
+            "what do you do?",
+            "what can you do for me ?",
+            "what can i ask for ?",
+            "why would i use it?",
+            "what can i ask?",
+            "what are you capable of doing ?",
+            "how can i use you?",
+            "how can you help me?",
+            "what can i do",
+            "what can you do",
+            "what are you able to do",
+            "what do you do",
+            "what can you do for me",
+            "what can i ask for",
+            "why would i use it",
+            "what can i ask",
+            "what are you capable of doing",
+            "how can i use you",
+            "how can you help me"
+        ],
+        "examples": [
+            "Can you give me a quick overview of your features?",
+            "What can I ask you to do?",
+            "Tell me about your capabilities.",
+            "How can you assist me during my drive?",
+            "What services do you offer?"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "GetCurrentTime",
+        "language": "en",
+        "description": "The user asks for the current time. The assistant simply responds with the system time.",
+        "trigger": "User",
+        "templates": [
+            "what time is it ?",
+            "time please ?",
+            "what time is it",
+            "time please"
+        ],
+        "examples": [
+            "What's the time now?",
+            "Can you tell me what time it is?",
+            "Give me the current time, please.",
+            "How late is it?"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 8
+            },
+            {
+                "code": "INT",
+                "count": 1
+            },
+            {
+                "code": "PHN",
+                "count": 1
+            }
+        ]
+    },
+    {
+        "intent": "Global_Poi_Choice",
+        "language": "en",
+        "description": "The user select a proposition of point of interest from a list previously given by the assistant.",
+        "trigger": "User",
+        "templates": [
+            "{poi_choice}"
+        ],
+        "examples": [
+            "Please select the third restaurant from the list",
+            "I want to go to the first attraction you suggested",
+            "Let's visit the fourth hotel on your list"
+        ],
+        "categories": [
+            {
+                "code": "POI",
+                "count": 8
+            },
+            {
+                "code": "NAV",
+                "count": 10
+            },
+            {
+                "code": "DSC",
+                "count": 10
+            }
+
+        ]
+    },
+    {
+        "intent": "Global_User_Choice",
+        "language": "en",
+        "description": "This intent is triggered when the user selects a specific option or choice from a list provided by the AI car assistant. The user indicates their preference by specifying a number or identifier associated with the choice. This intent is **not** about selecting a point of interest but rather about choosing from a list of options, such as podcasts, restaurants, hotels, or attractions.",
+        "trigger": "User",
+        "templates": [
+            "number {choice_nbr}",
+            "the {choice_nbr} onE",
+            "the {choice_nbr} choice",
+            "the {choice_nbr}",
+            "the {choice_nbr} ",
+            "{choice_nbr}",
+            "podcast number {choice_nbr}",
+            "choice number {choice_nbr}",
+            "restaurant number {choice_nbr}",
+            "hotel number {choice_nbr}",
+            "attraction number {choice_nbr}",
+            "the {choice_nbr} podcast",
+            "the {choice_nbr} hotel",
+            "the {choice_nbr} attraction",
+            "the {choice_nbr} restaurant",
+            "option {choice_nbr}",
+            "choice {choice_nbr}"
+        ],
+        "examples": [
+            "the number 3",
+            "Select the second one from the list",
+            "Let's go with number 1",
+            "I choose the third option",
+            "I want the fourth one"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 6
+            },
+            {
+                "code": "POI",
+                "count": 4
+            },
+            {
+                "code": "COM",
+                "count": 4
+            },
+            {
+                "code": "INT",
+                "count": 4
+            },
+            {
+                "code": "SYS",
+                "count": 4
+            }
+        ]
+    },
+    {
+        "intent": "Global_User_Rejection",
+        "language": "en",
+        "description": "This intent is triggered when the user explicitly reject or refuse a previous suggestion, request, or offer made by the AI car assistant. ex: 'no', 'not interested', 'no thanks', 'i don't want to'...",
+        "trigger": "User",
+        "templates": [
+            "no",
+            "abort",
+            "refuse",
+            "not interested",
+            "ignore",
+            "no i'm not",
+            "no i don't",
+            "no thanks",
+            "i don't want",
+            "i don't want to",
+            "reject"
+        ],
+        "examples": [
+            "no",
+            "not interested",
+            "no thanks",
+            "i don't want to"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            },
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Hackathon",
+        "language": "en",
+        "description": "The user inquires about their vehicle's performance or capabilities, such as acceleration, overtaking assistance, or safety-related metrics. The request is oriented toward technical evaluation.",
+        "trigger": "User",
+        "templates": [
+            "give me vehicle data",
+            "can i overtake now"
+        ],
+        "examples": [
+            "give me vehicle data",
+            "can i overtake now"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            },
+            {
+                "code": "MTN",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Nav_AddStop",
+        "language": "en",
+        "description": "Add a new stop or destination to their current navigation route or itinerary. this is **not** about point of interest but about adding a step to the current route.",
+        "trigger": "User",
+        "templates": [
+            "add a step to  {placename",
+            "add office to my itinerary",
+            "add a step to {city}"
+        ],
+        "examples": [
+            "Can you add a stop at the coffee shop?",
+            "Hey, I need to pick up my friend, can you add that to my route?",
+            "Add a stop at the grocery store on my way home.",
+            "I want to include a visit to the museum in my navigation.",
+            "Please add a detour to the nearest gas station."
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Nav_ASKUserNewGuidance",
+        "language": "en",
+        "description": "The user requests the AI car assistant to refresh or recalculate their current navigation route, possibly due to changes in traffic conditions, new destinations, or updated preferences.",
+        "trigger": "User",
+        "templates": [
+            "ask_new_guidance",
+            "{question_choice_start_guidance}"
+        ],
+        "examples": [
+            "I need you to refresh my navigation, please.",
+            "Can you recalculate my route?",
+            "can you check if the best route change since you first calculated it ?"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "NAV_RemoveStop",
+        "language": "en",
+        "description": "Remove a stop or destination from their route in the AI car assistant.",
+        "trigger": "User",
+        "templates": [
+            "remove the step to {placename}",
+            "remove the step to {city}"
+        ],
+        "examples": [
+            "Can you remove this stop on my route?",
+            "Hey, can you take this stop off the list?",
+            "Remove the last stop I added from my route, please",
+            "Remove the stop at san Francisco"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "NAV_ShowMapView",
+        "language": "en",
+        "description": "Display a map view of the user's current navigation.",
+        "trigger": "User",
+        "templates": [
+            "switch to map view",
+            "show map view"
+        ],
+        "examples": [
+            "Can you show me the map right now?",
+            "display the map, please",
+            "I need a map view of where I am",
+            "Show me a map of my route, yeah",
+            "Switch to the map view, okay?"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "NAV_StartGuidance",
+        "language": "en",
+        "description": "The user wants to start navigating to a destination, which may include providing directions, traffic updates, and estimated time of arrival.",
+        "trigger": "User",
+        "templates": [
+            "drive me to {placename}",
+            "drive me to home",
+            "drive me to {city}"
+        ],
+        "examples": [
+            "Take me to downtown Los Angeles",
+            "Can you guide me to the stadium?",
+            "Start navigating to my destination, please.",
+            "Get me directions to the mall, okay?",
+            "Guide me to San Francisco"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "NAV_StopGuidance",
+        "language": "en",
+        "description": "The user requests to stop or cancel the current navigation guidance.",
+        "trigger": "User",
+        "templates": [
+            "stop my journey"
+        ],
+        "examples": [
+            "Turn off your directions",
+            "Stop navigating me around",
+            "I don't need you to guide me anymore",
+            "Please stop giving me turn-by-turn instructions",
+            "Cancel navigation guidance"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "OrderPizza",
+        "language": "en",
+        "description": "The user wants to order a pizza, possibly including preferences such as type, size, delivery, or location. This is a specific type of commercial food order, not a general food or restaurant request.",
+        "trigger": "User",
+        "templates": [
+            "i want to order a pizza",
+            "order pizza",
+            "i would like to have pizza"
+        ],
+        "examples": [
+            "can you help me order a pizza",
+            "how do i get a pie delivered to my location",
+            "what's the easiest way to get pizza delivered?",
+            "I'd love to order some pizza, can you make that happen?",
+            "just give me an easy way to order a pizza please"
+        ],
+        "categories": [
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Payment_Authorization",
+        "language": "en",
+        "description": "The user authorizes the assistant to proceed with a payment of a specified amount. not about initiating a payment but confirming that the user agrees to proceed with a transaction.",
+        "trigger": "User",
+        "templates": [
+            "i authorize to make payment of 5 pounds",
+            "i authorize to proceed with the payment",
+            "i authorize to make a payment of 5 pounds to reserve the table ",
+            "i authorize to make a payment of 5 pounds to book  the hotel."
+        ],
+        "examples": [
+            "I authorize the payment of $50 for the restaurant reservation.",
+            "I agree to pay $20 for the parking spot.",
+            "Confirm the payment of $30 for the movie tickets.",
+            "Authorize the payment of $15 for my coffee order."
+        ],
+        "categories": [
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Payment_Reservation",
+        "language": "en",
+        "description": "The user requests the assistant to make a reservation at a restaurant or hotel, which may involve payment. This intent is focused on booking a spot at a specific point of interest, such as a restaurant or hotel, and may include payment details.",
+        "trigger": "User",
+        "templates": [
+            "make a reservation for {poi_type} {choice_no}",
+            "reserve a table in restaurant ",
+            "book a hotel for me",
+            "reserve a table for dinner"
+        ],
+        "examples": [
+            "Can you book a table for two at the Italian restaurant?",
+            "I need a reservation at the downtown hotel for next weekend.",
+            "Please reserve a spot at the sushi place for tonight.",
+            "Make a booking for a room at the beach resort, please.",
+            "I'd like to reserve a table at the steakhouse for tomorrow evening."
+        ],
+        "categories": [
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_News",
+        "language": "en",
+        "description": "The user asks the assistant to play the daily bried podcast. This podcast typically provides a summary of the day's news and important events.",
+        "trigger": "User",
+        "templates": [
+            "play the daily brief",
+            "give me the daily brief",
+            "play dailybrief",
+            "play daily brief",
+            "what's the news of the day",
+            "what's the news",
+            "any news today"
+        ],
+        "examples": [
+            "Can you play the daily brief podcast?",
+            "I want to hear today's news summary.",
+            "What's the latest news update?",
+            "Play the daily brief for me, please.",
+            "Give me the news of the day"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            },
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskForwardChapter",
+        "language": "en",
+        "description": "The user asks to advance or skip forward in the current podcast episode by a specified time interval (e.g., 15 seconds, 1 minute). This is typically used to skip ahead within the current chapter or episode.",
+        "trigger": "User",
+        "templates": [
+            "advance the podcast by {offset} {secondes_minutes}",
+            "i want to advance the chapter by {offset} {secondes_minutes}",
+            "advance the chapter by {offset} {secondes_minutes}",
+            "advance the chapter",
+            "skip the chapter by {offset} {secondes_minutes}",
+            "move the episode {offset} {secondes_minutes} ahead",
+            "fast forward the episode by {offset} {secondes_minutes}",
+            "push the chapter ahead",
+            "push the episode"
+        ],
+        "examples": [
+            "Can you skip ahead 30 seconds in this podcast?",
+            "I want to move forward 5 minutes in the current episode",
+            "Please fast forward the podcast by 2 minutes",
+            "Can you push the chapter ahead by 15 seconds?",
+            "Skip the next 10 seconds of this podcast"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskLike",
+        "language": "en",
+        "description": "The user wants to express their enthusiasm, affection, appreciation, or positive opinion about something.",
+        "trigger": "User",
+        "templates": [
+            "{likeslot}",
+            "i {likeslot} it",
+            "i {likeslot}",
+            "{likeslot} it",
+            "{dislikeslot} ",
+            "i {dislikeslot} it",
+            "i {dislikeslot} ",
+            "{dislikeslot} it"
+        ],
+        "examples": [
+            "I really like this podcast",
+            "I love this song",
+            "This is great, I like it",
+            "I enjoy this content",
+            "This is awesome, I like it"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            },
+            {
+                "code": "POI",
+                "count": 10
+            },
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskListenToPodcast",
+        "language": "en",
+        "description": "The user asks the assistant to start playing a specific podcast, either by name or topic. This starts a new podcast stream.",
+        "trigger": "User",
+        "templates": [
+            "i want to listen to a podcast",
+            "i want to listen to a podcast related to {category}",
+            "i want a podcast",
+            "i want a {category} podcast",
+            "play a podcast",
+            "play a {category} podcast",
+            "open a podcast",
+            "open a {category} podcast",
+            "give me a podcast",
+            "give me a {category} podcast",
+            "i want to listen to a {category} podcast",
+            "play podcast",
+            "play {category} podcast",
+            "open podcast",
+            "open {category} podcast",
+            "i want to listen to a podcast with less than {minute} minutes",
+            "i want a podcast with less than {minute} minutes",
+            "play a podcast that lasts {minute} minutes",
+            "open a podcast that lasts {minute} minutes",
+            "open {category} podcast with less than {minute} minutes",
+            "open  {minute} minutes podcast about {category}",
+            "play {minute} minutes podcast of {category}",
+            "i want  {minute} minutes podcast"
+        ],
+        "examples": [
+            "can you play the latest episode of my favorite podcast",
+            "open the podcast 'daily commute' for me, please",
+            "what podcasts do you have on entrepreneurship? I want to listen to one.",
+            "play a podcast about technology that's under an hour long",
+            "give me a science podcast recommendation, thanks"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskNextSkipPodcast",
+        "language": "en",
+        "description": "The user asks to play the next chapter or episode of the currently playing podcast.",
+        "trigger": "User",
+        "templates": [
+            "play the next chapter",
+            "next chapter",
+            "next",
+            "next one",
+            "play next",
+            "skip the chapter",
+            "give me the next chapter",
+            "play the next episode,'skip the episode"
+        ],
+        "examples": [
+            "Hey, can I skip to the next episode ?",
+            "Next chapter of my podcast, please.",
+            "Give me the next episode.",
+            "Play the next episode, okay?",
+            "Can you move on to the next episode?"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskPausePodcast",
+        "language": "en",
+        "description": "The user asks to pause the currently playing podcast.",
+        "trigger": "User",
+        "templates": [
+            "pause podcast",
+            "pause the podcast",
+            "i want to pause the podcast",
+            "can you stop the podcast for a moment",
+            "i need to pause the podcast",
+            "i'd like to put the podcast on hold for a bit",
+            "can we stop the podcast for a second",
+            "stop podcast",
+            "i want to stop the podcast",
+            "put the podcast on hold"
+        ],
+        "examples": [
+            "pause the podcast, please",
+            "can you pause the podcast now",
+            "stop this podcast for a minute",
+            "hold up, I need to pause this podcast",
+            "pause the current podcast if you don't mind"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskPreviousChapter",
+        "language": "en",
+        "description": "The user asks to return to the previous chapter or episode of the podcast they are listening to.",
+        "trigger": "User",
+        "templates": [
+            "previous chapter",
+            "play the previous chapter",
+            "go back to the previous chapter",
+            "play the chapter that played before this one"
+        ],
+        "examples": [
+            "Can you take me back to the previous chapter?",
+            "I want to hear the previous chapter again.",
+            "Go back to the last chapter, please.",
+            "Can you rewind to the previous chapter?"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskResumeLastPodcast",
+        "language": "en",
+        "description": "The user wants to resume playback of the last podcast that was paused or stopped, continuing from where it left off.",
+        "trigger": "User",
+        "templates": [
+            "resume {chosen_podcast}  the podcast",
+            "continue {chosen_podcast} the podcast",
+            "can you resume {chosen_podcast} the podcast ",
+            "can you continue {chosen_podcast}  the podcast ",
+            "resume my last podcast.",
+            "continue my last podcast.",
+            "i want to continue  {chosen_podcast}",
+            "i want to resume  {chosen_podcast}",
+            "can you resume {chosen_podcast} ",
+            "can you continue {chosen_podcast}  ",
+            "resume the last podcast.",
+            "continue the last podcast."
+        ],
+        "examples": [
+            "Hey, can I pick up where I left off on that podcast?",
+            "Can you start playing my podcast from where I stopped?",
+            "Resume the last podcast for me, thanks.",
+            "I was in the middle of listening to something, can you continue that podcast?",
+            "Just get back to my podcast, okay?"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_AskRewindChapter",
+        "language": "en",
+        "description": "The user asks to rewind, or go back in the current podcast by a short time interval (e.g., 15 seconds) to hear something again.",
+        "trigger": "User",
+        "templates": [
+            "move the podcast back by {offset} {secondes_minutes}",
+            "rewind the episode by {offset} {secondes_minutes}",
+            "go back {offset} {secondes_minutes} in the chapter",
+            "decrease the playback time by {offset} {secondes_minutes}",
+            "slow down the podcast by {offset} {secondes_minutes}",
+            "shift the podcast {offset} {secondes_minutes} backwards",
+            "go back {offset} {secondes_minutes} in the podcast",
+            "rewind the podcast"
+        ],
+        "examples": [
+            "Can you rewind the podcast 10 seconds?",
+            "Go back to where I started listening a minute ago.",
+            "Move the podcast back by 5 minutes, okay?",
+            "Rewind by 30 seconds, please."
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_PersonalDailyBrief",
+        "language": "en",
+        "description": "Request a daily briefing on the user's schedule and tasks for the day",
+        "trigger": "User",
+        "templates": [
+            "pdc_sgst_db"
+        ],
+        "examples": [
+            "Can you give me my personal daily brief?",
+            "What's on my schedule for today?",
+            "Tell me about my tasks and appointments for the day.",
+            "I need a summary of my day ahead, please.",
+            "What do I have planned for today?"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_PodcastAroundMe",
+        "language": "en",
+        "description": "The user asks the assistant to play podcasts or audio content relevant to their current location or surroundings. These are typically geo-contextualized media experiences, not physical places to visit.",
+        "trigger": "User",
+        "templates": [
+            "pdc_sgst_pdcarm"
+        ],
+        "examples": [
+            "Hey, what podcasts are near me right now?",
+            "Can you play some local podcast options for where I am?",
+            "I'm in neighborhood, can you give me a list of podcasts popular around here?",
+            "What's the best podcast to listen to while driving in this area?",
+            "Play some podcasts that are relevant to my current location, city."
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 10
+            },
+            {
+                "code": "POI",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PDC_TellListenToPodcast_dynamic",
+        "language": "en",
+        "description": "[Not enough informations]",
+        "trigger": "skip",
+        "templates": [
+            "pdc_sgst_dynamic"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PDC_TellListenToPodcast_resume",
+        "language": "en",
+        "description": "[Not enough informations]",
+        "trigger": "skip",
+        "templates": [
+            "pdc_tltpr",
+            "pdc_tltpr is working from home and he like it/my mom is going to the groceries store/ alex is going to foodball"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PDC_Tell_LastChapter",
+        "language": "en",
+        "description": "Informs the user that he just listened to the last chapter of you podcast and ask them if they want to listen to another one.",
+        "trigger": "Model",
+        "templates": [
+            "pdc_tlch",
+            "pdc_tlch this is the last chapter from the podcast that you are listening to. would you like to play another podcast?"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PMS_PersonalizationModeExplain",
+        "language": "en",
+        "description": "Provide an explanation or definition of a specific car mode or feature, or generally explain how the user can customize their car.",
+        "trigger": "",
+        "templates": [
+            "what does it mean {typemode} mode",
+            "could you explain me what is the {typemode} mode",
+            "what is {typemode} mode",
+            "what can i do to personalize my car?",
+            "what are these different modes ?",
+            "what is {typemode}",
+            "what is the difference between these modes?"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "POI_InfoChoice",
+        "language": "en",
+        "description": "Requests additional information about a specific Point of Interest (POI) selected by the user.",
+        "trigger": "",
+        "templates": [
+            "i want more information about the {choice} one",
+            "i want more information about the {choice}",
+            "i want more information about  {choice} poi",
+            "give me more info on number {choice}",
+            "give me more information on number {choice}",
+            "i want to know more about {choice}"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "POI_NoDataInRadius",
+        "language": "en",
+        "description": "Inform the user that there is no data available for points of interest (POIs) within a specific radius when they ask about nearby locations.",
+        "trigger": "Model",
+        "templates": [
+            "{question_choice_radius}"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PROA_AQA_AirQualityAlert",
+        "language": "en",
+        "description": "Alert the user about air quality issues based on current pollution and pollen levels, and potential signal changes in the surrounding environment.",
+        "trigger": "Model",
+        "templates": [
+            "proa_aqa {pollenlevel} {pollutionlevel} {signalchange}"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PROA_ETP_EvTestProposal",
+        "language": "en",
+        "description": "The user asks to try out or demo a product or service, typically related to a vehicle or technology experience. This is a pre-purchase test request.",
+        "trigger": "User",
+        "templates": [
+            "proa_etp"
+        ],
+        "examples": [
+            "Hey, I'd love to try out that new GPS app.",
+            "Can you give me a demo of the premium subscription option, please?",
+            "I'm interested in testing the advanced safety features on your smartwatch. Can I get a trial?",
+            "How do I go about getting a free trial for that new music streaming service I've been eyeing?",
+            "Can you walk me through the process of trying out this new software and what it has to offer?"
+        ],
+        "categories": [
+            {
+                "code": "PHN",
+                "count": 9
+            },
+            {
+                "code": "MED",
+                "count": 1
+            }
+        ]
+    },
+    {
+        "intent": "PROA_EWA_EndWeatherAQAlert",
+        "language": "en",
+        "description": "User acknowledge receipt of a weather air quality alert.",
+        "trigger": "User",
+        "templates": [
+            "proa_ewa {airinfo}",
+            "proa_ewa {warningtype}"
+        ],
+        "examples": [
+            "I understand, thanks for the air quality alert."
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PROA_NBP_NewsBulletinProposal",
+        "language": "en",
+        "description": "The user asks for news updates related to their current or upcoming route, including traffic, weather, and local events. This intent is used to provide relevant news information based on the user's navigation context.",
+        "trigger": "User",
+        "templates": [
+            "proa_nbp"
+        ],
+        "examples": [
+            "Show me the latest news for my next stop",
+            "What's happening near where I'm headed?",
+            "Give me some traffic news if there are any updates today",
+            "Can you provide a news update for where we're going?",
+            "Is there any important news related to our route?"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 9
+            },
+            {
+                "code": "POI",
+                "count": 1
+            },
+            {
+                "code": "NAV",
+                "count": 1
+            },
+            {
+                "code": "DSC",
+                "count": 1
+            }
+        ]
+    },
+    {
+        "intent": "PROA_USER_CONFIRMATION",
+        "language": "en",
+        "description": "This intent is triggered when the user explicitly agrees or accept a previous suggestion, request, or offer made by the AI car assistant. ex: 'yes', 'sure', 'go ahead', 'i want to proceed', 'i agree', 'i accept'...",
+        "trigger": "User",
+        "templates": [
+            "yes i want to",
+            "yes i do",
+            "yes please",
+            "yes of course",
+            "yes",
+            "positive",
+            "please yes",
+            "accept",
+            "i confirm"
+        ],
+        "examples": [
+            "yes i want to",
+            "yes of course",
+            "positive",
+            "please yes",
+            "accept",
+            "i confirm"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            },
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "PROA_WAW_Weather_AlertWaypoint",
+        "language": "en",
+        "description": "Warn the user about weather conditions at specific waypoints on their route",
+        "trigger": "Model",
+        "templates": [
+            "proa_waw {utterancerating} {warningtype} {waypoint} {interest1} {interest2} "
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PROA_WAZ_WeatherAlertZone",
+        "language": "en",
+        "description": "Warn the user about weather conditions in a specific zone",
+        "trigger": "Model",
+        "templates": [
+            "proa_waz {risklevel} {warningtype} {duration} {timeunit} {signalchange}"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PROA_WCN_WarningContactNotification",
+        "language": "en",
+        "description": "Warns the user about a car issue and suggests contacting service",
+        "trigger": "Model",
+        "templates": [
+            "proa_wcn"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "PROA_WOB_WelcomeOnBoard",
+        "language": "en",
+        "description": "Welcomes the user when they start using the car or assistant.",
+        "trigger": "Model",
+        "templates": [
+            "proa_wob",
+            "NINJA"
+        ],
+        "examples": [
+            ""
+        ],
+        "categories": []
+    },
+    {
+        "intent": "RemindMeLater",
+        "language": "en",
+        "description": "The user asks the assistant to set a reminder about a previously discussed topic or suggested item. The reminder is scheduled for a later moment in the same session or day.",
+        "trigger": "User",
+        "templates": [
+            "remind me later",
+            "later",
+            "postpone",
+            "remind me"
+        ],
+        "examples": [
+            "can you remind me to think about this later?",
+            "i want to come back to this in 30 minutes, can you remind me then?",
+            "remind me when I get home from work today",
+            "can you set a reminder for this conversation to pick up later"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            },
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "SaveCardInfo",
+        "language": "en",
+        "description": "The user wants to save their credit card or payment information for future use. The assistant may confirm this storage or inform about privacy/security. This is not a payment or reservation, just a storage operation.",
+        "trigger": "User",
+        "templates": [
+            "save card details ",
+            "save card info",
+            "save card information"
+        ],
+        "examples": [
+            "Okay Alexa, save my credit card details so I don't have to enter them again next time",
+            "Hey Siri, can you store my credit card info for later use?",
+            "Save my cards, please, like American Express and Visa",
+            "Add my credit card details to the system, it's a real pain re-entering every time",
+            "Remember my credit card number and expiration date, I don't want to keep typing it"
+        ],
+        "categories": [
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "SaveDiscoveryDrive",
+        "language": "en",
+        "description": "The user wants to save the current Discovery Drive route, including the selected points of interest and trajectory, for future reuse.",
+        "trigger": "User",
+        "templates": [
+            "save my tour",
+            "save my trip"
+        ],
+        "examples": [
+            "Save this route as my discovery drive",
+            "Can you save where I am now and where I've been?",
+            "Save my current drive"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 5
+            },
+            {
+                "code": "NAV",
+                "count": 5
+            },
+            {
+                "code": "SYS",
+                "count": 5
+            }
+        ]
+    },
+    {
+        "intent": "ScenicMode_AddPOIToTrip",
+        "language": "en",
+        "description": "The user requests to add a point of interest to the current trip or Discovery Drive route.",
+        "trigger": "User",
+        "templates": [
+            "please add it to my trip",
+            "no, but please add it to my trip",
+            "please add to my trip"
+        ],
+        "examples": [
+            "Can you add this statue to my route?",
+            "Hey, can you add this garden to my trip?",
+            "Add this to the scenic drive I'm on right now.",
+            "Hey assistant, can you put this spot on my route?"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 10
+            },
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+                "code": "POI",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "Scenic_Mode_User_Choice",
+        "language": "en",
+        "description": "The user asks for more information about a specific point of interest (POI) they have chosen or selected during their scenic drive. This intent is used to provide detailed information about the POI, such as history, significance, or features.",
+        "trigger": "User",
+        "templates": [
+            "tell me more about {user_choice} poi",
+            "please tell me more about {user_choice} poi",
+            "i want to know more about {user_choice} poi", 
+            "more on {user_choice} poi",
+            "i want to know more about number {user_choice} poi",
+            "scenic mode {user_choice} poi"
+        ],
+        "examples": [
+            "Can you tell me more about the last point of interest we passed?",
+            "Please tell me about the second POI on my scenic drive.",
+            "I want to know more about the statue we just saw.",
+            "What can you tell me more about this building we drive by?"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 7
+            },
+            {
+                "code": "POI",
+                "count": 3
+            }
+        ]
+    },
+    {
+        "intent": "SendToPhone",
+        "language": "en",
+        "description": "Send a message or command from the AI car assistant to the user's phone",
+        "trigger": "User",
+        "templates": [
+            "send to phone",
+            "send to my phone",
+            "send to the app",
+            "send to mycar",
+            "send to mycar app",
+            "sent to the mycar app"
+        ],
+        "examples": [
+            "Hey, send that message to my phone, okay?",
+            "Send it to my mobile, will you?",
+            "I need you to send a note to my phone right now.",
+            "Send whatever we were just talking about over to my phone, thanks"
+        ],
+        "categories": [
+            {
+                "code": "PHN",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "ShowDetails",
+        "language": "en",
+        "description": "The user asks for more detailed information about something, point of interest, service, podcast or the information given to him from the main screen.",
+        "trigger": "User",
+        "templates": [
+            "show details",
+            "show more information"
+        ],
+        "examples": [
+            "Tell me more about that",
+            "Can you give me more information on this topic ?",
+            "What else can you tell me about this ?",
+            "Provide more context about subject",
+            "Give me all the details, please"
+        ],
+        "categories": [
+            {
+                "code": "MED",
+                "count": 8
+            },
+            {
+                "code": "INT",
+                "count": 2
+            }
+        ]
+    },
+    {
+        "intent": "SMA_ShowMeAround",
+        "language": "en",
+        "description": "The user asks an overview of the points of interest around their current location or within the city they are currently in.",
+        "trigger": "User",
+        "templates": [
+            "show me around",
+            "show me around in {city}",
+            "show me {poi_type}",
+            "show me {poi_type} in {city}",
+            "give me a list of {poi_type}",
+            "give me a list of {poi_type} in {city}",
+            "what are the {poi_type} around",
+            "what are the {poi_type} around {city}"
+        ],
+        "examples": [
+            "What’s good to see around here?",
+            "Show me things to do in this city.",
+            "Are there any nice places nearby?",
+            "What can I visit around this area?",
+            "Give me things to check out in town."
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+                "code": "POI",
+                "count": 10
+            },
+            {
+                "code": "COM",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "SMA_ShowMePOIs",
+        "language": "en",
+        "description": "The user requests to see points of interest specifically along their current navigation route. The user may also just ask if there is anything interesting to see on their route, without specifying a type of POI.",
+        "trigger": "User",
+        "templates": [
+            "show me pois on my route",
+            "show me {poi_type} on my route",
+            "show me {poi_type}  ahead of me",
+            "show me {poi_type}  on my journey",
+            "show me {poi_type}  around my next waypoint",
+            "show me pois on my journey",
+            "show me pois around my next waypoint",
+            "show me pois ahead of me"
+        ],
+        "examples": [
+            "What can I see on my route?",
+            "Are there any cool stops on the way?",
+            "Show me some places ahead of me.",
+            "Any attractions along this road?",
+            "What's worth visiting on my journey?"
+        ],
+        "categories": [
+            {
+                "code": "POI",
+                "count": 10
+            },
+            {
+                "code": "NAV",
+                "count": 10
+            },
+            {
+                "code": "DSC",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "StartDiscoveryDrive",
+        "language": "en",
+        "description": "The user wants to start a Discovery Drive that has been previously planned or saved, without providing any new route details, destinations, or preferences.",
+        "trigger": "User",
+        "templates": [
+            "start my tour",
+            "start discovery drive",
+            "start my trip"
+        ],
+        "examples": [
+            "Start the discovery drive.",
+            "Let's begin the tour now.",
+            "Start the tour we talked about.",
+            "Begin my discovery drive.",
+            "Okay, launch the planned tour."
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "StartDiscoveryDrive_UserChoice",
+        "language": "en",
+        "description": "The user wants to start a Discovery Drive from a list tour proposed by the assistant in a previous interaction. in the user's utterance, the user chose one of the option, without providing any new route details, destinations, or preferences",
+        "trigger": "User",
+        "templates": [
+            "start the tour number {userchoice}",
+            "start the trip number {userchoice}",
+            "start the {userchoice} tour",
+            "start the {userchoice} trip"
+        ],
+        "examples": [
+            "Start the tour number 2",
+            "Begin the trip number 3",
+            "Launch the 1st tour",
+            "Start the 4th tour"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            },
+            {
+                "code": "NAV",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "TG_AskMoreInfo",
+        "language": "en",
+        "description": "The users ask the assistant to add additionnal informations or details about what the assistant said previously in the conversation, the user's utterance might hint that this is not the first interaction about the topic.",
+        "trigger": "User",
+        "templates": [
+            "yes. tell me more about the attraction",
+            "tell me more",
+            "sure. tell me more"
+        ],
+        "examples": [
+            "yes. tell me more about this",
+            "tell me more",
+            "sure. tell me more"
+        ],
+        "categories": [
+            {
+                "code": "POI",
+                "count": 10
+            },
+            {
+                "code": "INT",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "TG_NextPOIStory",
+        "language": "en",
+        "description": "The user asks the assistant to tell them more about the next point of interest on their route, continuing a story or contextual explanation during a Discovery Drive or navigation experience. This maintains engagement while driving.",
+        "trigger": "User",
+        "templates": [
+            "narrate more about the next attraction",
+            "i want more info about next attraction",
+            "start next attraction story",
+            "no but please tell me more about next poi"
+        ],
+        "examples": [
+            "what's the story behind the next landmark we're approaching?",
+            "can you give me some fun facts about the place after this exit?",
+            "tell me more about what I'll see on the route coming up, please",
+            "what's the deal with the next point of interest on our drive today?",
+            "give me a little background on the next attraction we're heading towards"
+        ],
+        "categories": [
+            {
+                "code": "NAV",
+                "count": 9
+            },
+            {
+                "code": "POI",
+                "count": 1
+            }
+        ]
+    },
+    {
+        "intent": "TG_ScenicMode",
+        "language": "en",
+        "description": "Enable or disable the car's scenic mode",
+        "trigger": "User",
+        "templates": [
+            "please activate scenic mode",
+            "activate scenic mode",
+            "start scenic mode"
+        ],
+        "examples": [
+            "Turn on scenic mode, please",
+            "Can you put me in scenic mode now?",
+            "Set scenic route for my drive today",
+            "Let's get into scenic mode for this trip"
+        ],
+        "categories": [
+            {
+                "code": "DSC",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "TurnOnMoodLight",
+        "language": "en",
+        "description": "The user asks the assistant to enable mood lighting in the car cabin. This may be part of ambiance or relaxation features. this does not control the light color",
+        "trigger": "User",
+        "templates": [
+            "i want to turn on mood light",
+            "turn on mood light",
+            "can you switch on mood light",
+            "mood light"
+        ],
+        "examples": [
+            "Turn on the mood lighting, please",
+            "Can I get some mood lights going?",
+            "Switch on the mood lights for me",
+            "I'd like to dim the lights and set a cozy ambiance"
+        ],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "WAQ_AskWeatherAirQuality",
+        "language": "en",
+        "description": "Request information about the current or forecasted weather and air quality in a specific location.",
+        "trigger": "User",
+        "templates": [
+            "{askslot} {airinfo} {requesttime} {requestcity}",
+            "{askslot} {airinfo} {requesttime} {requestcity} please",
+            "{askslot} {airinfo} {requesttime} in {requestcity}",
+            "{askslot} {airinfo} {requesttime} in {requestcity} please",
+            "{askslot} {airinfo} {requesttime} in central {requestcity}",
+            "{askslot} {airinfo} {requesttime} in central {requestcity} please",
+            "{askslot} {airinfo} level {requesttime} {requestcity}",
+            "{askslot} {airinfo} level {requesttime} {requestcity} please",
+            "{askslot} {airinfo} level {requesttime} in {requestcity}",
+            "{askslot} {airinfo} level {requesttime} in {requestcity} please",
+            "{askslot} {airinfo} level {requesttime} in central {requestcity}",
+            "{askslot} {airinfo} level {requesttime} in central {requestcity} please",
+            "{askslot} the {airinfo} {requesttime} {requestcity}",
+            "{askslot} the {airinfo} {requesttime} {requestcity} please",
+            "{askslot} the {airinfo} {requesttime} in {requestcity}",
+            "{askslot} the {airinfo} {requesttime} in {requestcity} please",
+            "{askslot} the {airinfo} {requesttime} in central {reuestcity}",
+            "{askslot} the {airinfo} {requesttime} in central {requestcity} please",
+            "{askslot} the {airinfo} level {requesttime} {requestcity}",
+            "{askslot} the {airinfo} level {requesttime} {requestcity} please",
+            "{askslot} the {airinfo} level {requesttime} in {requestcity}",
+            "{askslot} the {airinfo} level {requesttime} in {requestcity} please",
+            "{askslot} the {airinfo} level {requesttime} in central {requestcity}",
+            "{askslot} the {airinfo} level {requesttime} in central {requestcity} please",
+            "please {askslot} {airinfo} {requesttime} {requestcity}",
+            "please {askslot} {airinfo} {requesttime} in {requestcity} ",
+            "please {askslot} {airinfo} {requesttime} in central {requestcity}",
+            "please {askslot} {airinfo} level {requesttime} {requestcity}",
+            "please {askslot} {airinfo} level {requesttime} in {requestcity}",
+            "please {askslot} {airinfo} level {requesttime} in central {requestcity}",
+            "please {askslot} the {airinfo} {requesttime} {requestcity}",
+            "please {askslot} the {airinfo} {requesttime} in {requestcity}",
+            "please {askslot} he {airinfo} {requesttime} in central {requestcity}",
+            "please {askslot} the {airinfo} level {requesttime} {requestcity}",
+            "please {askslot} the {airinfo} level {requesttime} in {requestcity}",
+            "please {askslot} the {airinfo} level {requesttime} in central {requestcity}",
+            "{askslot} the {airinfo} probability {requesttime} in {requestcity}",
+            "{askslot} the {airinfo} probability {requesttime}  {requestcity}",
+            "{askslot} the {airinfo} probability {requesttime} in central {requestcity}",
+            "{askslot} the {airinfo} probability {requesttime} in {requestcity} please",
+            "{askslot} the {airinfo} like {requesttime} in {requestcity}",
+            "{askslot} the {airinfo} like {requesttime}  {requestcity}",
+            "{askslot} the {airinfo} like {requesttime} in central {requestcity}",
+            "{askslot} the {airinfo} like"
+        ],
+        "examples": [
+            "What's the weather and air quality like right now in San Francisco?",
+            "Can you tell me about the weather and air quality forecast for tomorrow in New York City, please?",
+            "How is the weather and air quality looking today in Chicago?",
+            "What's the current weather and air quality situation in Los Angeles, if you don't mind?",
+            "Give me an update on the weather and air quality in Dallas - what's it like right now?"
+        ],
+        "categories": [
+            {
+                "code": "INT",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "WAQ_TellWeatherAirQuality",
+        "language": "en",
+        "description": "",
+        "trigger": "Model",
+        "templates": [
+            "waq_tell {airinfo} {airinfolevels} {requesttime} {requestcityan} ",
+            "waq_tellno {airinfo}",
+            "waq_tellweather {airinfo} {numbervalue} {unit} {weatherstatus} {requesttime} {requestcityan}"
+        ],
+        "examples": [],
+        "categories": []
+    },
+    {
+        "intent": "WindowControl",
+        "language": "en",
+        "description": "The user asks to open or close one or more windows in the car. The assistant is expected to control the windows accordingly.",
+        "trigger": "User",
+        "templates": [
+        ],
+        "examples": [],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            }
+        ]
+    },
+    {
+        "intent": "GetTyrePressure",
+        "language": "en",
+        "description": "The user requests the current tyre pressure. The assistant is expected to provide the pressure data for each wheel if available.",
+        "trigger": "User",
+        "templates": [
+        ],
+        "examples": [],
+        "categories": [
+            {
+                "code": "SYS",
+                "count": 10
+            },
+            {
+                "code": "MTN",
+                "count": 10
+            }
+        ]
+    }
+]

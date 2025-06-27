@@ -1,11 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Accordion from "../accordion";
 
 const labels = {
   title: "Emotion and Intention Recognition",
   full:
     "This module will recognize both the emotion and the intention in the audio sent through the module [Audio Selection]. It will first segment if needed, then transcribe the text before analyzing the voice and the text to determine the user's emotional state and explicit intentions.",
-  button: "Analyze audio",
+  buttonEmotion: "Emotion",
+  buttonIntention: "Intention",
+  buttonBoth: "Both",
 };
 
 // Unified API call function
@@ -22,18 +24,86 @@ const callASRApi = async (endpoint, bodyObj) => {
   };
 };
 
+function extractIntentName(predictedText, validIntents, distanceThreshold = 5, fallback = "no_intention") {
+    function getLastTokensFromLines(text) {
+        return text
+            .split('\n')
+            .map((line, index) => {
+                const tokens = line.toLowerCase().trim().match(/\b\w+\b/g);
+                return {
+                    index,
+                    line,
+                    lastToken: tokens && tokens.length > 0 ? tokens[tokens.length - 1] : null
+                };
+            })
+            .filter(entry => entry.lastToken !== null);
+    }
+
+    function levenshtein(a, b) {
+        const matrix = Array.from({ length: b.length + 1 }, (_, i) =>
+            Array.from({ length: a.length + 1 }, (_, j) => 0)
+        );
+
+        for (let i = 0; i <= b.length; i++) matrix[i][0] = i;
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b[i - 1] === a[j - 1]) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j - 1] + 1
+                    );
+                }
+            }
+        }
+
+        return matrix[b.length][a.length];
+    }
+
+    const candidates = getLastTokensFromLines(predictedText);
+    const lines = predictedText.split('\n');
+
+    let bestMatch = null;
+    let bestLineIndex = -1;
+    let minDistance = distanceThreshold;
+
+    for (const { lastToken, index } of candidates) {
+        for (const intent of validIntents) {
+            const intentLower = intent.toLowerCase();
+            const distance = levenshtein(lastToken, intentLower);
+            if (distance < minDistance) {
+                minDistance = distance;
+                bestMatch = intent;
+                bestLineIndex = index;
+            }
+        }
+    }
+
+    const chainOfThought = lines.filter((_, i) => i !== bestLineIndex);
+
+    return {
+        chainOfThought,
+        code: bestMatch || fallback
+    };
+}
+
+
 // Unified response processor
 export const processResponse = (rawResult) => {
   const lines = rawResult.trim().split("\n");
   const lastLine = lines.pop();
-
   let code = [];
 
   try {
     code = JSON.parse(lastLine);
   } catch {
     code = lastLine
-      .replace(/[\[\]"']/g, "")
+    // eslint-disable-next-line
+      .replace(/[\[\]"'*]/g, "")
       .split(",")
       .map((e) => e.trim())
       .filter(Boolean);
@@ -47,8 +117,20 @@ export const processResponse = (rawResult) => {
 const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
   const [responseMessage, setResponseMessage] = useState([]);
   const [status, setStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMode, setLoadingMode] = useState(null);
   const resultRef = useRef(null);
+  const [intents, setIntents] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch('/assets/intents.json')
+      .then((response) => response.json())
+      .then((data) => setIntents([...data.map(intent => intent.intent), "no_intention"]));
+
+    fetch('/assets/categories.json')
+      .then((response) => response.json())
+      .then((data) => setCategories(data.map(category => category.name)));
+  }, []);
 
   useEffect(() => {
     if (resultRef.current) {
@@ -63,8 +145,9 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
     audioFiles[selectedAudio].transcription &&
     audioFiles[selectedAudio].transcription.trim() !== "";
 
-  const processSentence = async (sentence) => {
+  const processSentence = async (sentence, mode) => {
     // Start with an empty entry for this sentence
+    console.log("Processing sentence:", sentence, "Mode:", mode);
     setResponseMessage((prev) => [
       ...prev,
       {
@@ -79,53 +162,64 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
       },
     ]);
 
-    // 1. Emotion API call
-    const { status: emotionStatus, result: emotionRaw } = await callASRApi("emotion", { transcription: sentence });
-    const { chainOfThought: emotionCoT, code: emotions } = processResponse(emotionRaw);
+    if(mode ==="emotion" || mode === "both"){
+      // 1. Emotion API call
+      const { status: emotionStatus, result: emotionRaw } = await callASRApi("emotion", { transcription: sentence });
+      const { chainOfThought: emotionCoT, code: emotions } = processResponse(emotionRaw);
 
-    setResponseMessage((prev) =>
-      prev.map((item) =>
-        item.text === sentence
-          ? { ...item, emotionCoT, emotions, status: emotionStatus }
-          : item
-      )
-    );
+      setResponseMessage((prev) =>
+        prev.map((item) =>
+          item.text === sentence
+            ? { ...item, emotionCoT, emotions, status: emotionStatus }
+            : item
+        )
+      );
+    }
+    if(mode === "intention" || mode === "both"){
+      // 2. Intention Category API call
+      const { result: intentionRaw } = await callASRApi("intention_category", { transcription: sentence });
+      const { chainOfThought: intentionCoT, code: categoryCode } = extractIntentName(intentionRaw, categories, 1, "NONE");
 
-    // 2. Intention Category API call
-    const { status: intentionStatus, result: intentionRaw } = await callASRApi("intention_category", { transcription: sentence });
-    const { chainOfThought: intentionCoT, code: intentionCodes } = processResponse(intentionRaw);
-    const categoryCode = intentionCodes.length > 0 ? intentionCodes[0] : "";
+      setResponseMessage((prev) =>
+        prev.map((item) =>
+          item.text === sentence
+            ? { ...item, intentionCoT, categoryCode }
+            : item
+        )
+      );
 
-    setResponseMessage((prev) =>
-      prev.map((item) =>
-        item.text === sentence
-          ? { ...item, intentionCoT, categoryCode }
-          : item
-      )
-    );
+      if(categories.includes(categoryCode)){
+        // 3. Fine Intention API call
+        const { status: fineStatus, result: fineIntentionRaw } = await callASRApi("intention", {
+          category_code: categoryCode,
+          transcription: sentence,
+        });
 
-    // 3. Fine Intention API call
-    const { status: fineStatus, result: fineIntentionRaw } = await callASRApi("intention", {
-      category_code: categoryCode,
-      transcription: sentence,
-    });
-    const { chainOfThought: fineIntentionCoT, code: fineIntentionCodes } = processResponse(fineIntentionRaw);
-    const intention = fineIntentionCodes.length > 0 ? fineIntentionCodes[0] : "";
+        const { chainOfThought: fineIntentionCoT, code: intention } = extractIntentName(fineIntentionRaw, intents, 5, "no_intention");
 
-    setResponseMessage((prev) =>
-      prev.map((item) =>
-        item.text === sentence
-          ? { ...item, fineIntentionCoT, intention }
-          : item
-      )
-    );
-
-    // Update status with last call's status (optional)
-    setStatus(fineStatus);
+        setResponseMessage((prev) =>
+          prev.map((item) =>
+            item.text === sentence
+              ? { ...item, fineIntentionCoT, intention }
+              : item
+          )
+        );
+        setStatus(fineStatus);
+      } else {
+        setResponseMessage((prev) =>
+          prev.map((item) =>
+            item.text === sentence
+              ? { ...item, fineIntentionCoT: "", intention: "no_intention" }
+              : item
+          )
+        );
+        setStatus(200);
+      }
+    }
   };
 
 
-  const handleRunCommand = async () => {
+  const handleRunCommand = async (mode) => {
     setResponseMessage([]);
     setStatus(null);
 
@@ -135,7 +229,7 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
       return;
     }
 
-    setIsLoading(true);
+    setLoadingMode(mode);  // Set loading mode here
 
     try {
       const { transcription, segment } = audioFiles[selectedAudio];
@@ -147,12 +241,11 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
           .filter(Boolean);
 
         for (const sentence of sentences) {
-          await processSentence(sentence);
-          // Small delay for UX smoothness
+          await processSentence(sentence, mode);
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
       } else {
-        await processSentence(transcription);
+        await processSentence(transcription, mode);
       }
     } catch (error) {
       setResponseMessage([
@@ -160,7 +253,7 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
       ]);
       setStatus(500);
     } finally {
-      setIsLoading(false);
+      setLoadingMode(null); // Reset loading mode when done
     }
   };
 
@@ -179,13 +272,33 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
             </span>
           ) : null}
 
-          <button
-            className={`execute ${isLoading || !isAudioValid ? "disabled" : ""}`}
-            onClick={handleRunCommand}
-            disabled={isLoading || !isAudioValid}
-          >
-            {isLoading ? "Running..." : labels.button}
-          </button>
+          <div style={{ display: "flex" }}>
+            <button
+              className={`execute ${loadingMode === "emotion" ? "disabled" : ""} ${loadingMode && loadingMode !== "emotion" ? "otherRun" : ""}`}
+              onClick={() => handleRunCommand("emotion")}
+              disabled={loadingMode === "emotion" || !isAudioValid}
+              style={{ marginRight: "0.5rem" }}
+            >
+              {loadingMode === "emotion" ? "Running..." : labels.buttonEmotion}
+            </button>
+
+            <button
+              className={`execute ${loadingMode === "intention" ? "disabled" : ""} ${loadingMode && loadingMode !== "intention" ? "otherRun" : ""}`}
+              onClick={() => handleRunCommand("intention")}
+              disabled={loadingMode === "intention" || !isAudioValid}
+              style={{ marginRight: "0.5rem" }}
+            >
+              {loadingMode === "intention" ? "Running..." : labels.buttonIntention}
+            </button>
+
+            <button
+              className={`execute ${loadingMode === "both" ? "disabled" : ""} ${loadingMode && loadingMode !== "both" ? "otherRun" : ""}`}
+              onClick={() => handleRunCommand("both")}
+              disabled={loadingMode === "both" || !isAudioValid}
+            >
+              {loadingMode === "both" ? "Running..." : labels.buttonBoth}
+            </button>
+          </div>
 
           {responseMessage.length > 0 && (
             <>
@@ -240,5 +353,4 @@ const EmotionRecognition = ({ audioFiles, selectedAudio }) => {
     />
   );
 };
-
 export default EmotionRecognition;

@@ -22,6 +22,8 @@ Below are the possible intents for this category:
 - [RemindMeLater] - The user asks the assistant to set a reminder about a previously discussed topic or suggested item. The reminder is scheduled for a later moment in the same session or day.
 - [SaveDiscoveryDrive] - The user wants to save the current Discovery Drive route, including the selected points of interest and trajectory, for future reuse.
 - [TurnOnMoodLight] - The user asks the assistant to enable mood lighting in the car cabin. This may be part of ambiance or relaxation features. this does not control the light color
+- [WindowControl] - The user asks to open or close one or more windows in the car. The assistant is expected to control the windows accordingly.
+- [GetTyrePressure] - The user requests the current tyre pressure. The assistant is expected to provide the pressure data for each wheel if available.
 
 --- User Utterance ---
 {input}

@@ -1,0 +1,38 @@
+[
+  {
+    "name": "NAV",
+    "description": "Navigation – Covers all interactions related to route planning and guidance. Includes starting or stopping navigation, adding or removing stops, requesting updated directions, showing the map view."
+  },
+  {
+    "name": "DSC",
+    "description": "Discovery – Covers user interactions focused on exploratory, guided, or scenic driving experiences. Includes initiating or ending discovery drives, requesting tours, saving routes, adjusting preferences like duration, and enabling scenic or story-based modes. Encompasses both autonomous and user-driven exploration of points of interest, landmarks, and tourist attractions."
+  },
+  {
+    "name": "POI",
+    "description": "Points of Interest – Interactions focused on discovering, selecting, or learning more about places such as landmarks, attractions, businesses, or scenic spots. Includes requesting guided tours, choosing POIs along a route, or asking for additional details or recommendations."
+  },
+  {
+    "name": "SYS",
+    "description": "System Controls – Managing and monitoring the vehicle’s internal systems and settings, such as air conditioning, lighting, ambiance colors, user profiles, and retrieving status information like speed or safety metrics. This category excludes any controls that involve taking control of the driving or autonomous driving functions."
+  },
+  {
+    "name": "MED",
+    "description": "Media – Interactions involving the playback and control of audio content such as podcasts, music, or radio. Includes actions like play, pause, skip, rewind, resume, and selecting specific episodes or content based on preferences or location."
+  },
+  {
+    "name": "MTN",
+    "description": "Support & Maintenance – Managing vehicle-related services such as scheduling dealer appointments, requesting repairs, roadside assistance, or contacting support and service centers."
+  },
+  {
+    "name": "COM",
+    "description": "Commerce – Handles user interactions related to payments, orders, bookings, and transaction management. This includes initiating or authorizing payments, placing food orders, saving payment information, or making reservations at points of interest. Covers both in-car and external services such as parking, tolls, or restaurants."
+  },
+  {
+    "name": "INT",
+    "description": "Interaction – Conversational or social dialogue without a specific functional request. This includes greetings, general confirmations, general selection, help with the weather, vague help requests, and inquiries about the assistant's role or abilities."
+  },
+  {
+    "name": "PHN",
+    "description": "Phone – Interactions involving phone-related actions through the assistant, such as sending content to the user’s phone, launching mobile apps, or requesting trials and demos of services. Includes communication between the assistant and the user’s device."
+  }
+]

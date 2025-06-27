@@ -660,3 +660,8 @@ span.warning{
   user-select: none;
   width: min-content;
 }
+
+button.otherRun{
+  opacity: .5;
+  pointer-events: none;
+}
